@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Liftbrand ERP</title>
+    <title>Liftbrand ERP | Sovereign Blueprint</title>
 
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#1e293b">
@@ -15,7 +15,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
-    <!-- Quill.js for Rich Text -->
+    <!-- Quill.js for Rich Text (ClickUp Style) -->
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
 
@@ -23,528 +23,368 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
         
         :root { --brand: #7b2cbf; --brand-hover: #5a189a; --brand-light: #f3e8ff; --sidebar: #0f172a; --sidebar-hover: #1e293b; --bg: #ffffff; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: #334155; font-size: 13px; overflow: hidden; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: #334155; font-size: 14px; overflow: hidden; }
         h1, h2, h3, h4, .heading-font { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.02em; color: #0f172a; }
         
         .text-brand { color: var(--brand); } .bg-brand { background-color: var(--brand); color: white; }
         select, input, textarea { appearance: none; outline: none; }
         .hide-scrollbar::-webkit-scrollbar { display: none; } .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* ClickUp Style Sidebar */
-        .sidebar-item { display: flex; items-center; gap: 0.75rem; padding: 0.5rem 1rem; border-radius: 0.5rem; color: #94a3b8; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        /* Sidebar Responsive Logic */
+        #sidebar { position: fixed; height: 100vh; z-index: 50; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); transform: translateX(-100%); }
+        @media (min-width: 768px) { #sidebar { position: relative; transform: translateX(0); } #mobile-overlay { display: none !important; } }
+        #sidebar.open { transform: translateX(0); }
+
+        .sidebar-item { display: flex; items-center; gap: 0.75rem; padding: 0.75rem 1rem; border-radius: 0.5rem; color: #94a3b8; font-weight: 600; cursor: pointer; transition: all 0.2s; font-size: 13px; }
         .sidebar-item:hover { background-color: var(--sidebar-hover); color: #f8fafc; }
         .sidebar-item.active { background-color: var(--brand); color: white; }
+        .sidebar-section-title { font-size: 10px; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 0.05em; padding: 1.5rem 1rem 0.5rem; }
         
-        .kanban-col { min-height: calc(100vh - 200px); min-width: 320px; }
+        /* Task Cards */
         .task-card { transition: all 0.2s; border-left: 4px solid transparent; }
-        .task-card:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
-        .prio-urgent { background: #fee2e2; color: #dc2626; border-color: #f87171; }
-        .prio-high { background: #ffedd5; color: #ea580c; border-color: #fb923c; }
-        .prio-normal { background: #f1f5f9; color: #64748b; border-color: #cbd5e1; }
-        .prio-low { background: #f3f4f6; color: #9ca3af; border-color: #e5e7eb; }
+        .prio-urgent { border-left-color: #ef4444; } .prio-high { border-left-color: #f97316; }
+        .prio-normal { border-left-color: #3b82f6; } .prio-low { border-left-color: #94a3b8; }
 
-        .ql-container.ql-snow { border: 1px solid #e2e8f0; border-radius: 0 0 8px 8px; font-family: 'Inter', sans-serif; font-size: 13px; }
-        .ql-toolbar.ql-snow { border: 1px solid #e2e8f0; border-radius: 8px 8px 0 0; background: #f8fafc; }
-        .ql-editor { min-height: 150px; }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         
-        .view-tab { border-bottom: 2px solid transparent; padding-bottom: 0.5rem; color: #64748b; font-weight: 600; cursor: pointer; transition: all 0.2s;}
+        .view-tab { border-bottom: 2px solid transparent; padding-bottom: 0.5rem; color: #64748b; font-weight: 700; cursor: pointer; font-size: 13px; }
         .view-tab.active { border-bottom-color: var(--brand); color: var(--brand); }
 
-        /* Custom Scrollbar for content areas */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        /* Safe Area Support */
+        .safe-top { padding-top: env(safe-area-inset-top); }
+        .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+
+        /* Full Screen Modals for Mobile */
+        @media (max-width: 767px) {
+            .modal-content { height: 100vh !important; width: 100% !important; max-width: 100% !important; border-radius: 0 !important; margin: 0 !important; }
+            .ql-editor { min-height: 200px; }
+        }
     </style>
 </head>
-<body class="flex h-screen w-screen overflow-hidden bg-white">
+<body class="flex h-screen w-screen overflow-hidden bg-white safe-top safe-bottom">
+
+    <!-- MOBILE OVERLAY -->
+    <div id="mobile-overlay" class="fixed inset-0 bg-black/50 z-40 hidden" onclick="toggleSidebar(false)"></div>
 
     <!-- LOGIN SCREEN -->
     <div id="view-login" class="fixed inset-0 bg-[#0f172a] z-[100] flex flex-col items-center justify-center p-6">
-        <div class="bg-white p-10 max-w-sm w-full text-center rounded-2xl shadow-2xl relative">
-            <img src="https://assets.cdn.filesafe.space/kStDsoJsyMuEVTowimeB/media/695e8653f4549a075dee967f.png" alt="Liftbrand" class="h-20 mx-auto mb-6 object-contain">
-            <h2 class="text-2xl heading-font mb-2 text-slate-900 font-bold">Liftbrand ERP</h2>
-            <p class="text-sm text-slate-500 mb-8 font-medium">Authentication Required.</p>
+        <div class="bg-white p-8 md:p-10 max-w-sm w-full text-center rounded-2xl shadow-2xl relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1.5 bg-brand"></div>
+            <img src="https://assets.cdn.filesafe.space/kStDsoJsyMuEVTowimeB/media/695e8653f4549a075dee967f.png" alt="Liftbrand" class="h-16 mx-auto mb-6 object-contain">
+            <h2 class="text-2xl font-bold text-slate-900 mb-2">Liftbrand ERP</h2>
+            <p class="text-sm text-slate-500 mb-8">Access Secure Agency Portal</p>
             
-            <button id="btn-login-google" onclick="loginWithGoogle()" class="w-full bg-slate-900 text-white font-bold px-6 py-3.5 rounded-xl flex items-center justify-center gap-3 hover:bg-brand transition-all shadow-md">
-                <i class="fab fa-google text-lg"></i>
-                <span id="login-text">Sign in with Google</span>
+            <button id="btn-login-google" onclick="loginWithGoogle()" class="w-full bg-slate-900 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-3 active:scale-95 transition-all">
+                <i class="fab fa-google"></i> Login with Google
             </button>
-            <div id="login-spinner" class="hidden mt-4 text-sm font-bold text-brand"><i class="fas fa-circle-notch fa-spin mr-2"></i> Verifying Session...</div>
+            <div id="login-spinner" class="hidden mt-4 text-sm font-bold text-brand animate-pulse">Establishing Connection...</div>
             <div id="login-error" class="hidden mt-4 text-xs font-bold text-red-500 bg-red-50 p-3 rounded-lg border border-red-100"></div>
         </div>
     </div>
 
-    <!-- MAIN APP LAYOUT (ClickUp Style) -->
+    <!-- MAIN APP LAYOUT -->
     <div id="app-wrapper" class="hidden flex h-full w-full">
         
-        <!-- LEFT SIDEBAR -->
-        <div class="w-64 bg-[var(--sidebar)] text-slate-300 flex flex-col flex-shrink-0 h-full shadow-xl z-30">
-            <!-- Workspace Header -->
-            <div class="p-4 border-b border-slate-800 flex items-center gap-3 cursor-pointer hover:bg-slate-800 transition">
-                <div class="w-8 h-8 bg-brand rounded-lg flex items-center justify-center text-white font-bold shadow">LB</div>
-                <div>
-                    <h1 class="text-sm font-bold text-white leading-tight">Liftbrand Agency</h1>
-                    <p class="text-[10px] text-slate-500 font-medium">Free Plan</p>
+        <!-- SIDEBAR (Fixed/Drawer) -->
+        <div id="sidebar" class="w-72 bg-[var(--sidebar)] text-slate-300 flex flex-col flex-shrink-0 shadow-2xl overflow-y-auto hide-scrollbar">
+            <div class="p-6 flex items-center justify-between border-b border-slate-800">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-brand rounded-lg flex items-center justify-center text-white font-black text-xs">LB</div>
+                    <span class="text-sm font-bold text-white">Liftbrand</span>
                 </div>
+                <button class="md:hidden text-slate-500" onclick="toggleSidebar(false)"><i class="fas fa-times"></i></button>
             </div>
 
-            <!-- Global Search -->
-            <div class="p-3">
-                <div class="relative">
-                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
-                    <input type="text" placeholder="Search..." class="w-full bg-slate-800 text-white rounded-md pl-8 pr-3 py-1.5 text-xs outline-none focus:ring-2 focus:ring-brand">
-                </div>
-            </div>
-
-            <!-- Primary Nav -->
-            <div class="flex-1 overflow-y-auto px-3 py-2 space-y-1 hide-scrollbar">
-                <div onclick="switchMainView('home')" id="nav-home" class="sidebar-item active"><i class="fas fa-home w-5 text-center"></i> Home</div>
-                <div onclick="switchMainView('notifications')" id="nav-notif" class="sidebar-item"><i class="fas fa-bell w-5 text-center"></i> Inbox <span class="ml-auto bg-brand text-white text-[9px] px-1.5 rounded-full" id="notif-badge">0</span></div>
-                <div onclick="switchMainView('docs')" id="nav-docs" class="sidebar-item"><i class="fas fa-file-alt w-5 text-center"></i> Docs</div>
-                <div onclick="switchMainView('dashboards')" id="nav-dash" class="sidebar-item"><i class="fas fa-chart-line w-5 text-center"></i> Dashboards</div>
+            <div class="flex-1 px-3 py-4 space-y-1">
+                <div onclick="switchMainView('home')" id="nav-home" class="sidebar-item active"><i class="fas fa-home w-5"></i> Home</div>
+                <div onclick="switchMainView('notifications')" id="nav-notif" class="sidebar-item"><i class="fas fa-bell w-5"></i> Inbox</div>
+                <div onclick="switchMainView('docs')" id="nav-docs" class="sidebar-item"><i class="fas fa-file-alt w-5"></i> Docs</div>
                 
-                <div class="mt-6 mb-2 px-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest flex justify-between items-center">
-                    <span>Spaces</span>
-                    <button class="hover:text-white"><i class="fas fa-plus"></i></button>
+                <div class="sidebar-section-title">Operations</div>
+                <div id="spaces-list-sidebar" class="space-y-1">
+                    <!-- Spaces injected -->
                 </div>
 
-                <!-- Spaces Hierarchy -->
-                <div class="space-y-1" id="spaces-list">
-                    <!-- Client Management Space -->
-                    <div>
-                        <div class="sidebar-item !text-sm text-slate-400" onclick="toggleSpace('space-clients')"><i class="fas fa-briefcase w-5 text-center text-blue-400"></i> Clients & Sales</div>
-                        <div id="space-clients" class="pl-8 hidden space-y-1 mt-1">
-                            <div class="sidebar-item !text-xs !py-1 hover:text-white" onclick="switchMainView('client-onboarding')"><i class="fas fa-plus-circle text-slate-500 mr-2"></i>New Client</div>
-                            <div class="sidebar-item !text-xs !py-1 hover:text-white" onclick="switchMainView('client-portfolio')"><i class="fas fa-list text-slate-500 mr-2"></i>Portfolio List</div>
-                        </div>
-                    </div>
-                    <!-- Operations Space -->
-                    <div>
-                        <div class="sidebar-item !text-sm text-slate-400" onclick="toggleSpace('space-ops')"><i class="fas fa-layer-group w-5 text-center text-purple-400"></i> Operations</div>
-                        <div id="space-ops" class="pl-8 space-y-1 mt-1">
-                            <div class="sidebar-item !text-xs !py-1 hover:text-white" onclick="openListView('all_tasks')"><i class="fas fa-list text-slate-500 mr-2"></i>All Tasks</div>
-                            <div class="sidebar-item !text-xs !py-1 hover:text-white" onclick="openListView('my_tasks')"><i class="fas fa-user text-slate-500 mr-2"></i>Assigned to Me</div>
-                        </div>
-                    </div>
-                </div>
+                <button onclick="showCreateSpaceModal()" class="sidebar-item !text-slate-500 hover:!text-white mt-4 w-full">
+                    <i class="fas fa-plus-circle w-5"></i> New Space
+                </button>
             </div>
 
-            <!-- User Profile Bottom -->
-            <div class="p-3 border-t border-slate-800">
-                <div class="sidebar-item !p-2" onclick="handleSignOut()">
-                    <div id="user-pill-avatar" class="w-6 h-6 bg-slate-700 rounded text-white flex items-center justify-center text-xs font-bold"></div>
-                    <span id="user-pill-name" class="text-xs truncate">User</span>
-                    <i class="fas fa-sign-out-alt ml-auto text-slate-500 hover:text-red-400"></i>
+            <div class="p-4 border-t border-slate-800 bg-slate-900/50" onclick="handleSignOut()">
+                <div class="flex items-center gap-3 p-2 cursor-pointer hover:bg-slate-800 rounded-lg transition">
+                    <div id="user-pill-avatar" class="w-8 h-8 bg-brand text-white rounded flex items-center justify-center text-xs font-bold">U</div>
+                    <div class="min-w-0 flex-1">
+                        <p id="user-pill-name" class="text-xs font-bold text-white truncate">User Name</p>
+                        <p class="text-[10px] text-slate-500 font-bold uppercase">Admin</p>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- MAIN CONTENT AREA -->
-        <div class="flex-1 flex flex-col h-full bg-[#f8fafc] relative overflow-hidden">
+        <div class="flex-1 flex flex-col h-full bg-[#f8fafc] overflow-hidden">
             
-            <!-- Dynamic Topbar (Changes based on view) -->
-            <div class="h-14 bg-white border-b border-slate-200 flex items-center justify-between px-6 flex-shrink-0 z-20">
-                <div class="flex items-center gap-4">
-                    <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2" id="topbar-title">
-                        <i class="fas fa-home text-slate-400"></i> Home
-                    </h2>
-                    <!-- View Tabs (List, Board, etc) - Only visible on List views -->
-                    <div id="topbar-view-tabs" class="hidden items-center gap-6 ml-6 h-full mt-2">
-                        <div class="view-tab active" onclick="switchTaskView('list')" id="tab-list"><i class="fas fa-list mr-1"></i> List</div>
-                        <div class="view-tab" onclick="switchTaskView('board')" id="tab-board"><i class="fas fa-columns mr-1"></i> Board</div>
-                        <div class="view-tab" onclick="switchTaskView('calendar')" id="tab-calendar"><i class="far fa-calendar-alt mr-1"></i> Calendar</div>
-                    </div>
+            <!-- HEADER / TOPBAR -->
+            <div class="h-14 md:h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 md:px-6 z-20 flex-shrink-0">
+                <div class="flex items-center gap-3 md:gap-6">
+                    <button class="md:hidden w-10 h-10 flex items-center justify-center text-slate-500 text-lg" onclick="toggleSidebar(true)"><i class="fas fa-bars"></i></button>
+                    <h2 class="text-sm md:text-base font-bold text-slate-800 truncate max-w-[150px] md:max-w-none" id="topbar-title">Home</h2>
                 </div>
-                <div class="flex items-center gap-3">
-                    <button class="w-8 h-8 rounded-md bg-slate-100 text-slate-500 hover:bg-slate-200 transition flex items-center justify-center"><i class="fas fa-ellipsis-h"></i></button>
-                    <button onclick="showTaskModal()" id="btn-topbar-new-task" class="hidden bg-brand text-white px-4 py-1.5 rounded-md font-bold text-xs shadow hover:bg-brand-hover transition"><i class="fas fa-plus mr-1"></i> Task</button>
+                <div class="flex items-center gap-2">
+                    <div id="topbar-view-tabs" class="hidden md:flex items-center gap-6 mr-6">
+                        <div class="view-tab active" onclick="switchTaskView('list')" id="tab-list">List</div>
+                        <div class="view-tab" onclick="switchTaskView('board')" id="tab-board">Board</div>
+                    </div>
+                    <button onclick="showTaskModal()" id="btn-topbar-new-task" class="hidden bg-brand text-white px-3 md:px-4 py-1.5 rounded-lg font-bold text-xs shadow-sm"><i class="fas fa-plus mr-1"></i> Task</button>
                 </div>
             </div>
 
-            <!-- SCROLLABLE VIEW CONTAINER -->
-            <div class="flex-1 overflow-y-auto relative p-6">
+            <!-- VIEW CONTAINER -->
+            <div class="flex-1 overflow-y-auto relative p-4 md:p-6">
                 
-                <!-- VIEW: HOME / ACTION CENTER -->
+                <!-- MOBILE HOME VIEW -->
                 <div id="view-home" class="max-w-5xl mx-auto space-y-6">
-                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex justify-between items-center">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
                         <div>
-                            <h3 class="text-2xl font-bold text-slate-900" id="home-greeting">Good evening.</h3>
-                            <p class="text-sm text-slate-500">Here's your agenda for today.</p>
+                            <h1 class="text-2xl md:text-3xl font-bold text-slate-900" id="home-greeting">Hello.</h1>
+                            <p class="text-sm text-slate-500 font-medium">Agency status overview.</p>
                         </div>
-                        <div class="text-right">
-                            <p class="text-3xl font-black text-brand" id="home-my-tasks-count">0</p>
-                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">My Tasks</p>
-                        </div>
+                        <button onclick="switchMainView('client-onboarding')" class="w-full md:w-auto bg-slate-900 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-md active:scale-95 transition">
+                            <i class="fas fa-user-plus mr-2"></i> Onboard Client
+                        </button>
                     </div>
 
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- My Work -->
                         <div class="lg:col-span-2 space-y-4">
-                            <h4 class="font-bold text-slate-800 border-b border-slate-200 pb-2">My Work</h4>
-                            <div id="home-my-tasks-list" class="space-y-2">
-                                <!-- Tasks injected -->
+                            <div class="bg-white rounded-xl border border-slate-200 shadow-sm">
+                                <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                                    <h3 class="font-bold text-sm text-slate-800">My Tasks</h3>
+                                    <span class="bg-brand text-white text-[10px] px-2 py-0.5 rounded-full font-black" id="home-tasks-count">0</span>
+                                </div>
+                                <div id="home-my-tasks-list" class="divide-y divide-slate-50">
+                                    <!-- Tasks list -->
+                                </div>
                             </div>
                         </div>
+
+                        <!-- Action Center -->
                         <div class="space-y-4">
-                            <h4 class="font-bold text-slate-800 border-b border-slate-200 pb-2">Lineup (Overdue & Priority)</h4>
-                            <div id="home-lineup-list" class="space-y-2">
-                                <!-- Lineup injected -->
+                            <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                                <div class="p-4 border-b border-slate-100 bg-slate-900 text-white">
+                                    <h3 class="font-bold text-xs uppercase tracking-widest"><i class="fas fa-bolt text-amber-400 mr-2"></i> Action Center</h3>
+                                </div>
+                                <div id="home-alerts-container" class="divide-y divide-slate-50">
+                                    <!-- Alerts list -->
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- VIEW: LIST/BOARD (The Task Engine) -->
+                <!-- VIEW: TASKS -->
                 <div id="view-tasks" class="hidden h-full flex flex-col">
-                    
-                    <!-- Toolbar below tabs -->
-                    <div class="flex justify-between items-center mb-4 flex-shrink-0">
-                        <div class="flex gap-2">
-                            <div class="relative">
-                                <i class="fas fa-search absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                                <input type="text" placeholder="Search tasks..." class="pl-8 pr-3 py-1.5 bg-white border border-slate-200 rounded text-xs outline-none focus:border-brand w-48">
-                            </div>
-                            <button class="px-3 py-1.5 bg-white border border-slate-200 rounded text-xs font-bold text-slate-600 hover:bg-slate-50"><i class="fas fa-filter mr-1"></i> Filter</button>
-                        </div>
+                    <!-- Mobile view toggle for task list vs board -->
+                    <div class="md:hidden flex bg-slate-100 p-1 rounded-lg mb-4">
+                        <button onclick="switchTaskView('list')" id="m-tab-list" class="flex-1 py-1.5 text-xs font-bold rounded-md bg-white text-brand shadow-sm">List</button>
+                        <button onclick="switchTaskView('board')" id="m-tab-board" class="flex-1 py-1.5 text-xs font-bold text-slate-500">Board</button>
                     </div>
 
-                    <!-- List View Layout -->
-                    <div id="tasks-list-layout" class="flex-1 bg-white border border-slate-200 rounded-lg overflow-hidden flex flex-col">
-                        <div class="bg-slate-50 border-b border-slate-200 p-2 flex text-[11px] font-bold text-slate-500 uppercase tracking-widest sticky top-0">
-                            <div class="w-8 text-center">#</div>
-                            <div class="flex-1 px-2">Task Name</div>
-                            <div class="w-32 px-2">Assignee</div>
-                            <div class="w-32 px-2">Due Date</div>
-                            <div class="w-24 px-2">Priority</div>
-                            <div class="w-32 px-2">Status</div>
-                        </div>
+                    <div id="tasks-list-layout" class="flex-1 bg-white border border-slate-200 rounded-xl overflow-hidden flex flex-col">
                         <div id="tasks-list-container" class="flex-1 overflow-y-auto divide-y divide-slate-100">
-                            <!-- List rows injected here -->
+                            <!-- Injected Tasks -->
                         </div>
                     </div>
 
-                    <!-- Kanban Board Layout -->
-                    <div id="tasks-board-layout" class="hidden flex-1 overflow-x-auto hide-scrollbar flex gap-4 pb-4">
-                        <!-- Kanban Columns injected here dynamically based on statuses -->
+                    <div id="tasks-board-layout" class="hidden flex-1 overflow-x-auto flex gap-4 pb-6">
+                        <!-- Board Columns -->
                     </div>
                 </div>
 
-                <!-- VIEW: DOCS (With Attachments) -->
-                <div id="view-docs" class="hidden max-w-6xl mx-auto h-full flex flex-col">
-                    <div class="flex justify-between items-center mb-6 flex-shrink-0">
-                        <h3 class="text-xl font-bold text-slate-800">Workspace Documents</h3>
-                        <button onclick="showDocModal()" class="bg-brand text-white px-4 py-2 rounded-md font-bold text-xs shadow hover:bg-brand-hover"><i class="fas fa-plus mr-1"></i> New Doc / File</button>
+                <!-- VIEW: DOCS -->
+                <div id="view-docs" class="hidden max-w-6xl mx-auto space-y-6">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xl font-bold text-slate-800">Documents</h3>
+                        <button onclick="showDocModal()" class="bg-slate-900 text-white px-4 py-2 rounded-lg font-bold text-xs"><i class="fas fa-plus"></i></button>
                     </div>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 overflow-y-auto pb-6" id="docs-grid">
-                        <!-- Docs and Files injected here -->
-                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="docs-grid"></div>
                 </div>
 
-                <!-- VIEW: CLIENT ONBOARDING (Phase 1 Logic preserved) -->
-                <div id="view-client-onboarding" class="hidden max-w-4xl mx-auto bg-white p-8 rounded-xl border border-slate-200 shadow-sm">
-                    <!-- Preserved Onboarding UI inside standard container -->
-                    <h3 class="text-2xl font-bold heading-font mb-2">New Client Workspace</h3>
-                    <p class="text-sm text-slate-500 mb-6 font-medium">Select a package tier to automatically generate the project roadmap and notify the team.</p>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Business Name</label>
-                            <input type="text" id="new-client-name" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg text-sm font-bold outline-none focus:border-brand">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Start Date</label>
-                            <input type="date" id="new-client-signup" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg text-sm text-brand font-bold outline-none focus:border-brand">
-                        </div>
-                    </div>
-
-                    <div class="mb-6">
-                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-2">1. Select Core Package</label>
-                        <div class="grid grid-cols-2 gap-4">
-                            <label class="border-2 border-brand bg-brand-light/20 rounded-xl p-4 cursor-pointer">
+                <!-- VIEW: ONBOARDING -->
+                <div id="view-client-onboarding" class="hidden max-w-2xl mx-auto">
+                    <div class="bg-white p-6 md:p-10 rounded-2xl border border-slate-200 shadow-xl space-y-6">
+                        <h2 class="text-2xl font-bold text-slate-900">Initialize Client</h2>
+                        <input type="text" id="new-client-name" placeholder="Client Name" class="w-full p-4 bg-slate-50 border rounded-xl font-bold">
+                        <input type="date" id="new-client-signup" class="w-full p-4 bg-slate-50 border rounded-xl font-bold text-brand">
+                        
+                        <div class="space-y-3">
+                            <label class="block p-4 border-2 border-brand bg-brand-light/30 rounded-xl cursor-pointer">
                                 <input type="radio" name="tier_selection" value="foundation" class="hidden" checked>
-                                <h4 class="font-bold text-slate-900">Foundation <span class="text-brand text-xs ml-2">$299/mo</span></h4>
-                                <p class="text-xs text-slate-500 mt-1">Essential SEO, Ads, & Reputation.</p>
+                                <h4 class="font-bold">Foundation ($299)</h4>
+                                <p class="text-xs text-slate-500">Essential setup.</p>
                             </label>
-                            <label class="border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-brand transition">
+                            <label class="block p-4 border-2 border-slate-200 rounded-xl cursor-pointer">
                                 <input type="radio" name="tier_selection" value="growth" class="hidden">
-                                <h4 class="font-bold text-slate-900">Growth <span class="text-brand text-xs ml-2">$450/mo</span></h4>
-                                <p class="text-xs text-slate-500 mt-1">Fully managed, AI Receptionist, scale.</p>
+                                <h4 class="font-bold">Growth ($450)</h4>
+                                <p class="text-xs text-slate-500">Advanced scaling.</p>
                             </label>
                         </div>
+                        <button onclick="commitNewClient()" class="w-full py-4 bg-slate-900 text-white rounded-xl font-bold active:bg-brand">Create Client Workspace</button>
                     </div>
-                    
-                    <button onclick="commitNewClient()" class="w-full py-3 bg-slate-900 text-white rounded-lg font-bold text-sm hover:bg-brand transition-colors">Create Workspace & Notify Team</button>
                 </div>
 
             </div>
         </div>
     </div>
 
-    <!-- ════════ MODALS (ClickUp Style Overlays) ════════ -->
-    <div id="modal-overlay" class="fixed inset-0 bg-slate-900/60 hidden flex justify-center p-4 sm:p-6 z-50 backdrop-blur-sm overflow-y-auto">
+    <!-- MODAL OVERLAY -->
+    <div id="modal-overlay" class="fixed inset-0 bg-slate-900/70 hidden flex justify-center z-50 backdrop-blur-sm overflow-y-auto">
         
-        <!-- FULL TASK MODAL (ClickUp Style) -->
-        <div id="modal-task" class="hidden bg-white rounded-xl shadow-2xl w-full max-w-5xl flex flex-col md:flex-row overflow-hidden min-h-[500px] my-auto">
-            
-            <!-- Left Side: Task Content -->
-            <div class="flex-1 flex flex-col border-r border-slate-200 bg-white">
-                <div class="p-4 border-b border-slate-100 flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <select id="task-status" class="px-3 py-1 bg-slate-100 rounded text-xs font-bold text-slate-600 outline-none hover:bg-slate-200 cursor-pointer">
-                            <option value="todo">TO DO</option><option value="inprogress">IN PROGRESS</option><option value="review">REVIEW</option><option value="done">DONE</option>
-                        </select>
+        <!-- TASK MODAL (Fullscreen Mobile) -->
+        <div id="modal-task" class="hidden modal-content bg-white shadow-2xl w-full max-w-5xl flex flex-col md:flex-row overflow-hidden my-auto md:h-[80vh] md:rounded-2xl">
+            <div class="flex-1 flex flex-col bg-white overflow-y-auto">
+                <div class="p-4 border-b border-slate-100 flex items-center justify-between sticky top-0 bg-white z-10">
+                    <div class="flex items-center gap-3">
+                        <select id="task-status" class="px-3 py-1 bg-slate-100 rounded text-[10px] font-black uppercase outline-none"></select>
                         <span class="text-xs text-slate-400 font-mono" id="task-id-display">#NEW</span>
                     </div>
-                    <div class="flex gap-2">
-                        <button onclick="deleteTaskBtn()" id="btn-delete-task" class="text-red-400 hover:text-red-600 px-2 hidden"><i class="fas fa-trash-alt"></i></button>
-                        <button onclick="closeModals()" class="text-slate-400 hover:text-slate-600 px-2"><i class="fas fa-times text-lg"></i></button>
-                    </div>
+                    <button onclick="closeModals()" class="p-2 text-slate-400"><i class="fas fa-times text-lg"></i></button>
                 </div>
-
-                <div class="p-6 flex-1 overflow-y-auto">
-                    <input type="text" id="task-title" placeholder="Task Name" class="w-full text-2xl font-bold heading-font text-slate-900 mb-6 outline-none placeholder:text-slate-300">
+                
+                <div class="p-6 md:p-8 space-y-6">
+                    <input type="text" id="task-title" placeholder="Task Name" class="w-full text-2xl font-bold text-slate-900 outline-none">
                     
-                    <!-- Task Attributes Grid -->
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6 border border-slate-100 rounded-lg p-3 bg-slate-50/50">
+                    <div class="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl">
                         <div>
                             <label class="block text-[9px] font-bold text-slate-400 uppercase mb-1">Assignee</label>
-                            <select id="task-assignee" class="w-full bg-transparent text-sm font-semibold text-slate-700 outline-none cursor-pointer"></select>
+                            <select id="task-assignee" class="w-full bg-transparent text-sm font-bold text-slate-700"></select>
                         </div>
                         <div>
                             <label class="block text-[9px] font-bold text-slate-400 uppercase mb-1">Due Date</label>
-                            <input type="date" id="task-due" class="w-full bg-transparent text-sm font-semibold text-brand outline-none cursor-pointer">
-                        </div>
-                        <div>
-                            <label class="block text-[9px] font-bold text-slate-400 uppercase mb-1">Priority</label>
-                            <select id="task-priority" class="w-full bg-transparent text-sm font-semibold text-slate-700 outline-none cursor-pointer">
-                                <option value="low">Low</option><option value="normal" selected>Normal</option><option value="high">High</option><option value="urgent">Urgent</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-[9px] font-bold text-slate-400 uppercase mb-1">Client/Space</label>
-                            <select id="task-client" class="w-full bg-transparent text-sm font-semibold text-slate-700 outline-none cursor-pointer"><option value="">Internal</option></select>
+                            <input type="date" id="task-due" class="w-full bg-transparent text-sm font-bold text-brand">
                         </div>
                     </div>
 
-                    <!-- Rich Description -->
-                    <div class="mb-6">
-                        <h4 class="text-xs font-bold text-slate-500 mb-2"><i class="fas fa-align-left mr-1"></i> Description</h4>
-                        <div id="quill-task-desc"></div>
-                    </div>
+                    <div id="quill-task-desc" class="bg-white rounded-xl border border-slate-200"></div>
 
-                    <!-- Subtasks & Checklists (UI Shell) -->
-                    <div class="mb-6">
-                        <h4 class="text-xs font-bold text-slate-500 mb-2"><i class="fas fa-tasks mr-1"></i> Subtasks</h4>
-                        <div class="border border-slate-200 rounded-lg p-3 flex items-center gap-3">
-                            <input type="text" placeholder="Add a subtask..." class="flex-1 text-sm outline-none">
-                            <button class="bg-slate-100 text-slate-500 px-3 py-1 rounded text-xs font-bold hover:bg-slate-200">Add</button>
+                    <div class="space-y-3">
+                        <h4 class="font-bold text-sm">Subtasks</h4>
+                        <div id="subtasks-container" class="space-y-2"></div>
+                        <div class="flex gap-2">
+                            <input type="text" id="new-subtask-input" placeholder="Add subtask..." class="flex-1 p-3 bg-slate-50 border rounded-xl text-sm">
+                            <button onclick="addSubtask()" class="bg-slate-200 px-4 rounded-xl font-bold text-xs">Add</button>
                         </div>
-                    </div>
-
-                    <!-- Attachments -->
-                    <div>
-                        <h4 class="text-xs font-bold text-slate-500 mb-2"><i class="fas fa-paperclip mr-1"></i> Attachments</h4>
-                        <div class="border-2 border-dashed border-slate-200 rounded-lg p-4 text-center">
-                            <input type="file" id="task-file-upload" class="hidden">
-                            <button onclick="document.getElementById('task-file-upload').click()" class="text-sm font-bold text-brand hover:underline">Click to upload file</button>
-                            <p class="text-[10px] text-slate-400 mt-1">Uploads securely to Firebase Storage</p>
-                        </div>
-                        <div id="task-attachments-list" class="mt-3 space-y-2"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Right Side: Activity & Time Tracking -->
-            <div class="w-full md:w-80 bg-slate-50 flex flex-col">
-                <!-- Time Tracking Module -->
-                <div class="p-4 border-b border-slate-200 bg-white">
-                    <p class="text-[9px] font-bold text-slate-400 uppercase mb-2">Time Tracked</p>
-                    <div class="flex items-center justify-between">
-                        <span class="text-2xl font-mono font-bold text-slate-800" id="task-timer-display">00:00:00</span>
-                        <button id="btn-timer-toggle" onclick="toggleTimer()" class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 hover:bg-emerald-200 flex items-center justify-center"><i class="fas fa-play"></i></button>
                     </div>
                 </div>
 
-                <!-- Activity Feed -->
-                <div class="flex-1 p-4 overflow-y-auto">
-                    <p class="text-[9px] font-bold text-slate-400 uppercase mb-4">Activity</p>
-                    <div class="space-y-4" id="task-activity-feed">
-                        <div class="text-xs text-slate-500 italic text-center py-4">Save task to enable comments.</div>
-                    </div>
-                </div>
-
-                <!-- Action Footer -->
-                <div class="p-4 bg-white border-t border-slate-200">
-                    <button onclick="saveTask()" class="w-full bg-brand text-white py-2.5 rounded-lg font-bold text-sm hover:bg-brand-hover transition shadow">Save Task</button>
+                <div class="p-4 border-t border-slate-100 bg-white mt-auto sticky bottom-0">
+                    <button onclick="saveTask()" class="w-full bg-brand text-white py-4 rounded-xl font-bold shadow-lg">Save Changes</button>
+                    <button onclick="deleteTaskBtn()" id="btn-delete-task" class="w-full text-red-500 font-bold text-xs mt-4 hidden">Delete Task</button>
                 </div>
             </div>
         </div>
 
-        <!-- DOC CREATION MODAL -->
-        <div id="modal-doc" class="hidden bg-white rounded-xl shadow-2xl max-w-4xl w-full flex flex-col my-auto max-h-[90vh]">
-            <div class="p-4 border-b border-slate-100 flex justify-between items-center">
-                <h3 class="font-bold text-slate-800">Create Document</h3>
-                <button onclick="closeModals()" class="text-slate-400 hover:text-slate-600"><i class="fas fa-times"></i></button>
+        <!-- DOC MODAL -->
+        <div id="modal-doc" class="hidden modal-content bg-white shadow-2xl w-full max-w-4xl flex flex-col my-auto md:h-[90vh] md:rounded-2xl">
+            <div class="p-4 border-b flex justify-between items-center bg-white sticky top-0 z-10">
+                <span class="text-xs font-bold text-slate-400">DOC EDITOR</span>
+                <button onclick="closeModals()" class="p-2"><i class="fas fa-times text-lg"></i></button>
             </div>
-            <div class="p-6 flex-1 overflow-y-auto">
-                <input type="text" id="doc-title" placeholder="Document Title" class="w-full text-2xl font-bold heading-font mb-4 outline-none">
-                
-                <!-- Type Toggle -->
-                <select id="doc-type-select" onchange="toggleDocType(this.value)" class="mb-4 p-2 bg-slate-50 border border-slate-200 rounded text-sm font-bold text-slate-700 outline-none">
-                    <option value="native">Rich Text Document</option>
-                    <option value="file">Upload File Attachment</option>
-                    <option value="link">External Link (Drive, Figma)</option>
-                </select>
-
-                <div id="doc-editor-wrap">
-                    <div id="quill-doc-content"></div>
-                </div>
-
-                <div id="doc-file-wrap" class="hidden border-2 border-dashed border-slate-300 rounded-xl p-8 text-center bg-slate-50">
-                    <input type="file" id="doc-file-input" class="hidden">
-                    <button onclick="document.getElementById('doc-file-input').click()" class="bg-white border border-slate-200 px-4 py-2 rounded shadow-sm text-sm font-bold text-slate-700 hover:text-brand"><i class="fas fa-cloud-upload-alt mr-2"></i>Select File</button>
-                    <p class="text-xs text-slate-400 mt-2" id="doc-file-name-display">No file selected.</p>
-                </div>
-
-                <div id="doc-link-wrap" class="hidden">
-                    <input type="url" id="doc-url-input" placeholder="https://" class="w-full p-3 border border-slate-200 rounded text-sm outline-none focus:border-brand">
-                </div>
+            <div class="flex-1 overflow-y-auto p-4 md:p-10">
+                <input type="text" id="doc-title-input" placeholder="Untitled" class="w-full text-3xl font-black text-slate-900 mb-6 border-none outline-none">
+                <div id="quill-doc-editor"></div>
             </div>
-            <div class="p-4 border-t border-slate-100 text-right bg-slate-50">
-                <button onclick="saveDocument()" class="bg-brand text-white px-6 py-2 rounded text-sm font-bold shadow hover:bg-brand-hover">Save to Workspace</button>
+            <div class="p-4 border-t bg-slate-50 flex justify-end">
+                <button onclick="saveDocument()" class="bg-slate-900 text-white px-8 py-3 rounded-xl font-bold shadow-lg">Save Doc</button>
             </div>
         </div>
 
     </div>
 
-    <!-- JAVASCRIPT — Firebase + Auth + Storage -->
+    <!-- SCRIPTS -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getDatabase, ref, set, onValue, update, remove, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
         import { getAuth, signInWithPopup, signInWithRedirect, getRedirectResult, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-        import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
         const firebaseConfig = {
-            apiKey:            "AIzaSyAYnKMSoja6Q9pRgdj303IdxnxFoH-TVEw",
-            authDomain:        "liftbrand-s--sops.firebaseapp.com",
-            projectId:         "liftbrand-s--sops",
-            databaseURL:       "https://liftbrand-s--sops-default-rtdb.firebaseio.com",
-            storageBucket:     "liftbrand-s--sops.firebasestorage.app",
+            apiKey: "AIzaSyAYnKMSoja6Q9pRgdj303IdxnxFoH-TVEw",
+            authDomain: "liftbrand-s--sops.firebaseapp.com",
+            projectId: "liftbrand-s--sops",
+            databaseURL: "https://liftbrand-s--sops-default-rtdb.firebaseio.com",
+            storageBucket: "liftbrand-s--sops.firebasestorage.app",
             messagingSenderId: "699084171927",
-            appId:             "1:699084171927:web:3f340d5be748c9b35b97d2"
+            appId: "1:699084171927:web:3f340d5be748c9b35b97d2"
         };
 
-        let app, db, auth, storage;
-        let clients = [], team = [], tasks = [], docs = [];
+        let app, db, auth;
+        let clients = [], team = [], tasks = [], docs = [], spaces = [];
         let currentUser = null; 
-        let activeListView = 'all_tasks'; // all, my, or client_id
-        let currentTaskView = 'list'; // list or board
-        
+        let activeView = 'home';
+        let activeSpaceId = null;
+        let activeTaskView = 'list';
         let quillTask, quillDoc;
-        let activeTimerInterval = null;
-        let timerSeconds = 0;
 
         async function init() {
             try {
                 app = initializeApp(firebaseConfig);
                 db = getDatabase(app);
                 auth = getAuth(app);
-                storage = getStorage(app);
 
-                // Setup Quill Editors
-                const qOpts = { theme: 'snow', modules: { toolbar: [['bold', 'italic', 'underline', 'strike'], ['blockquote', 'code-block'], [{ 'list': 'ordered'}, { 'list': 'bullet' }, { 'list': 'check' }], ['link']] }};
-                quillTask = new Quill('#quill-task-desc', qOpts);
-                quillDoc = new Quill('#quill-doc-content', { theme: 'snow', modules: { toolbar: [[{'header':[1,2,3,false]}], ['bold','italic','underline'], [{'list':'ordered'},{'list':'bullet'}], ['link','image']] }});
+                quillTask = new Quill('#quill-task-desc', { theme: 'snow', modules: { toolbar: [['bold', 'italic'], [{list:'ordered'}, {list:'bullet'}]] }});
+                quillDoc = new Quill('#quill-doc-editor', { theme: 'snow', modules: { toolbar: [[{header:[1,2,false]}], ['bold', 'italic'], [{list:'check'}, {list:'bullet'}], ['image', 'link']] }});
 
-                // ==========================================
-                // THE iOS PWA AUTHENTICATION FIX
-                // ==========================================
-                const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-                const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-                
-                if (isIOS && isStandalone) {
-                    document.getElementById('btn-login-google').classList.add('hidden');
-                    document.getElementById('login-spinner').classList.remove('hidden');
-                }
-
-                // Explicitly wait for redirect result before setting up listener
-                getRedirectResult(auth).then(result => {
-                    if (result) {
-                        // Success! The onAuthStateChanged will handle the UI switch
-                        console.log("Redirect login successful.");
-                    } else if (isIOS && isStandalone) {
-                        // Not redirecting, show button
-                        document.getElementById('btn-login-google').classList.remove('hidden');
-                        document.getElementById('login-spinner').classList.add('hidden');
-                    }
-                }).catch(err => {
-                    document.getElementById('btn-login-google').classList.remove('hidden');
-                    document.getElementById('login-spinner').classList.add('hidden');
+                getRedirectResult(auth).catch(err => {
                     document.getElementById('login-error').innerText = err.message;
                     document.getElementById('login-error').classList.remove('hidden');
                 });
 
-                // Standard Auth Listener
                 onAuthStateChanged(auth, async (user) => {
                     if (user) {
-                        // Validate User Role
                         const snapshot = await get(ref(db, 'team'));
                         const members = Object.values(snapshot.val() || {});
                         const isHardcodedAdmin = user.email === 'ishamughal2004@gmail.com' || user.email === 'ismaeelahmad100@gmail.com';
                         const dbUser = members.find(m => m.email.toLowerCase() === user.email.toLowerCase());
 
                         if (dbUser || isHardcodedAdmin) {
-                            currentUser = { uid: user.uid, email: user.email, name: dbUser ? dbUser.name : user.displayName || 'Admin', isAdmin: isHardcodedAdmin || (dbUser?.isAdmin) };
-                            
-                            if (isHardcodedAdmin && !dbUser) await set(ref(db, 'team/' + Date.now()), { id: Date.now().toString(), name: currentUser.name, email: currentUser.email, isAdmin: true });
-
-                            // UI Update
+                            currentUser = { uid: user.uid, email: user.email, name: dbUser ? dbUser.name : user.displayName || 'Admin', isAdmin: isHardcodedAdmin || dbUser?.isAdmin };
                             document.getElementById('view-login').classList.add('hidden');
                             document.getElementById('app-wrapper').classList.remove('hidden');
-                            document.getElementById('user-pill-name').innerText = currentUser.name.split(' ')[0];
+                            document.getElementById('user-pill-name').innerText = currentUser.name;
                             document.getElementById('user-pill-avatar').innerText = currentUser.name.charAt(0);
-                            document.getElementById('home-greeting').innerText = `Welcome, ${currentUser.name.split(' ')[0]}.`;
-
+                            document.getElementById('home-greeting').innerText = `Hello, ${currentUser.name.split(' ')[0]}.`;
                             listenToData();
                             switchMainView('home');
                         } else {
                             signOut(auth);
-                            document.getElementById('login-error').innerText = "Access Denied. You are not in the Team Directory.";
+                            document.getElementById('login-error').innerText = "Unauthorized email.";
                             document.getElementById('login-error').classList.remove('hidden');
                         }
                     } else {
-                        currentUser = null;
                         document.getElementById('view-login').classList.remove('hidden');
                         document.getElementById('app-wrapper').classList.add('hidden');
                     }
                 });
-
-                window.loginWithGoogle = () => {
-                    const provider = new GoogleAuthProvider();
-                    if (isIOS && isStandalone) {
-                        document.getElementById('btn-login-google').classList.add('hidden');
-                        document.getElementById('login-spinner').classList.remove('hidden');
-                        signInWithRedirect(auth, provider);
-                    } else {
-                        signInWithPopup(auth, provider).catch(err => {
-                            if(err.code === 'auth/popup-blocked') signInWithRedirect(auth, provider);
-                            else {
-                                document.getElementById('login-error').innerText = err.message;
-                                document.getElementById('login-error').classList.remove('hidden');
-                            }
-                        });
-                    }
-                };
-
-                window.handleSignOut = () => { if(confirm('Sign out?')) signOut(auth); };
-
-            } catch(e) { console.error('[init error]', e); }
+            } catch(e) { console.error(e); }
         }
 
-        // ==========================================
-        // DATA & ROUTING
-        // ==========================================
+        window.loginWithGoogle = () => {
+            const provider = new GoogleAuthProvider();
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+            if (isIOS && isStandalone) {
+                document.getElementById('btn-login-google').classList.add('hidden');
+                document.getElementById('login-spinner').classList.remove('hidden');
+                signInWithRedirect(auth, provider);
+            } else {
+                signInWithPopup(auth, provider).catch(() => signInWithRedirect(auth, provider));
+            }
+        };
+
+        window.handleSignOut = () => { if(confirm('Logout?')) signOut(auth); };
+
         function listenToData() {
             onValue(ref(db, '/'), snapshot => {
                 const data = snapshot.val() || {};
@@ -552,336 +392,201 @@
                 team = data.team ? Object.values(data.team) : [];
                 tasks = data.tasks ? Object.values(data.tasks) : [];
                 docs = data.docs ? Object.values(data.docs) : [];
-
-                renderSidebarHierarchy();
+                spaces = data.spaces ? Object.values(data.spaces) : [];
+                renderSidebar();
                 updateHomeView();
-                if(document.getElementById('view-tasks').classList.contains('hidden') === false) renderTasks();
-                if(document.getElementById('view-docs').classList.contains('hidden') === false) renderDocs();
+                if(activeView === 'tasks') renderTasks();
+                if(activeView === 'docs') renderDocsGrid();
             });
         }
 
+        window.toggleSidebar = (show) => {
+            const s = document.getElementById('sidebar');
+            const o = document.getElementById('mobile-overlay');
+            if(show) { s.classList.add('open'); o.classList.remove('hidden'); }
+            else { s.classList.remove('open'); o.classList.add('hidden'); }
+        };
+
+        function renderSidebar() {
+            document.getElementById('spaces-list-sidebar').innerHTML = spaces.map(s => `
+                <div onclick="openSpace('${s.id}')" class="sidebar-item ${activeSpaceId === s.id ? 'active' : ''}">
+                    <i class="fas fa-folder w-5 text-amber-400"></i> ${s.name}
+                </div>
+            `).join('');
+            const tOpts = `<option value="">Unassigned</option>` + team.map(t => `<option value="${t.email}">${t.name}</option>`).join('');
+            document.getElementById('task-assignee').innerHTML = tOpts;
+        }
+
+        window.openSpace = (id) => {
+            activeSpaceId = id;
+            const s = spaces.find(x => x.id === id);
+            document.getElementById('topbar-title').innerText = s.name;
+            switchMainView('tasks');
+            toggleSidebar(false);
+        };
+
         window.switchMainView = (view) => {
-            // Hide all views
-            ['home', 'tasks', 'docs', 'client-onboarding'].forEach(v => {
-                document.getElementById(`view-${v}`)?.classList.add('hidden');
-            });
+            activeView = view;
+            ['home', 'tasks', 'docs', 'client-onboarding'].forEach(v => document.getElementById(`view-${v}`).classList.add('hidden'));
             document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
-
-            const topbarTabs = document.getElementById('topbar-view-tabs');
-            const topbarTitle = document.getElementById('topbar-title');
-            const newTaskBtn = document.getElementById('btn-topbar-new-task');
-
-            topbarTabs.classList.add('hidden');
-            newTaskBtn.classList.add('hidden');
-
+            document.getElementById('topbar-view-tabs').classList.add('hidden');
+            document.getElementById('btn-topbar-new-task').classList.add('hidden');
             if(view === 'home') {
                 document.getElementById('view-home').classList.remove('hidden');
                 document.getElementById('nav-home').classList.add('active');
-                topbarTitle.innerHTML = '<i class="fas fa-home text-slate-400"></i> Home';
-            } 
-            else if(view === 'docs') {
+                document.getElementById('topbar-title').innerText = 'Home';
+            } else if (view === 'tasks') {
+                document.getElementById('view-tasks').classList.remove('hidden');
+                document.getElementById('topbar-view-tabs').classList.remove('hidden');
+                document.getElementById('btn-topbar-new-task').classList.remove('hidden');
+                renderTasks();
+            } else if (view === 'docs') {
                 document.getElementById('view-docs').classList.remove('hidden');
                 document.getElementById('nav-docs').classList.add('active');
-                topbarTitle.innerHTML = '<i class="fas fa-file-alt text-slate-400"></i> Workspace Documents';
-            }
-            else if(view === 'client-onboarding') {
+                document.getElementById('topbar-title').innerText = 'Docs';
+                renderDocsGrid();
+            } else if (view === 'client-onboarding') {
                 document.getElementById('view-client-onboarding').classList.remove('hidden');
-                topbarTitle.innerHTML = '<i class="fas fa-rocket text-slate-400"></i> Client Onboarding';
+                document.getElementById('topbar-title').innerText = 'New Client';
             }
+            toggleSidebar(false);
         };
 
-        window.toggleSpace = (id) => {
-            const el = document.getElementById(id);
-            el.classList.toggle('hidden');
-        };
-
-        function renderSidebarHierarchy() {
-            // Update team dropdowns
-            const opts = `<option value="">-- Select --</option>` + team.map(t => `<option value="${t.email}">${t.name}</option>`).join('');
-            if(document.getElementById('task-assignee')) document.getElementById('task-assignee').innerHTML = opts;
-
-            const cOpts = `<option value="">Internal Agency Task</option>` + clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-            if(document.getElementById('task-client')) document.getElementById('task-client').innerHTML = cOpts;
-        }
-
-        // ==========================================
-        // HOME / ACTION CENTER
-        // ==========================================
         function updateHomeView() {
             const myTasks = tasks.filter(t => t.assigneeEmail === currentUser.email && t.status !== 'done');
-            document.getElementById('home-my-tasks-count').innerText = myTasks.length;
-            
-            document.getElementById('home-my-tasks-list').innerHTML = myTasks.length ? myTasks.map(t => `
-                <div class="flex items-center justify-between p-3 border border-slate-200 rounded-lg bg-white hover:border-brand cursor-pointer" onclick="openListView('my_tasks'); showTaskModal('${t.id}')">
+            document.getElementById('home-tasks-count').innerText = myTasks.length;
+            document.getElementById('home-my-tasks-list').innerHTML = myTasks.map(t => `
+                <div class="p-4 flex items-center justify-between border-b border-slate-50 active:bg-slate-50" onclick="showTaskModal('${t.id}')">
                     <div class="flex items-center gap-3">
-                        <div class="w-4 h-4 rounded border-2 border-slate-300"></div>
-                        <span class="font-bold text-sm text-slate-800">${t.title}</span>
+                        <div class="w-4 h-4 rounded-full border-2 border-slate-300"></div>
+                        <span class="font-bold text-slate-800">${t.title}</span>
                     </div>
-                    <span class="text-[10px] font-bold uppercase ${t.priority==='urgent'?'text-red-500':''}">${t.status}</span>
+                    <span class="text-[9px] font-black uppercase text-slate-400">${t.status}</span>
                 </div>
-            `).join('') : '<p class="text-sm text-slate-400 italic">No active tasks assigned to you.</p>';
+            `).join('');
         }
 
-
-        // ==========================================
-        // TASKS (CLICKUP ENGINE)
-        // ==========================================
-        window.openListView = (filterType) => {
-            activeListView = filterType;
-            ['home', 'docs', 'client-onboarding'].forEach(v => document.getElementById(`view-${v}`)?.classList.add('hidden'));
-            document.getElementById('view-tasks').classList.remove('hidden');
-            
-            document.getElementById('topbar-view-tabs').classList.remove('hidden');
-            document.getElementById('btn-topbar-new-task').classList.remove('hidden');
-            
-            let title = 'All Tasks';
-            if(filterType === 'my_tasks') title = 'Assigned to Me';
-            document.getElementById('topbar-title').innerHTML = `<i class="fas fa-list text-slate-400"></i> ${title}`;
-
-            renderTasks();
-        };
-
-        window.switchTaskView = (view) => {
-            currentTaskView = view;
-            document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
-            document.getElementById(`tab-${view}`).classList.add('active');
-
-            document.getElementById('tasks-list-layout').classList.add('hidden');
-            document.getElementById('tasks-board-layout').classList.add('hidden');
-
-            if(view === 'list') document.getElementById('tasks-list-layout').classList.remove('hidden');
-            if(view === 'board') document.getElementById('tasks-board-layout').classList.remove('hidden');
-            
-            renderTasks();
-        };
-
         function renderTasks() {
-            let filteredTasks = tasks;
-            if(activeListView === 'my_tasks') filteredTasks = tasks.filter(t => t.assigneeEmail === currentUser.email);
+            let filtered = tasks;
+            if(activeSpaceId) filtered = tasks.filter(t => t.spaceId === activeSpaceId);
+            
+            document.getElementById('m-tab-list').className = activeTaskView === 'list' ? 'flex-1 py-1.5 text-xs font-bold rounded-md bg-white text-brand shadow-sm' : 'flex-1 py-1.5 text-xs font-bold text-slate-500';
+            document.getElementById('m-tab-board').className = activeTaskView === 'board' ? 'flex-1 py-1.5 text-xs font-bold rounded-md bg-white text-brand shadow-sm' : 'flex-1 py-1.5 text-xs font-bold text-slate-500';
 
-            if(currentTaskView === 'list') {
-                document.getElementById('tasks-list-container').innerHTML = filteredTasks.map(t => {
-                    const assignee = team.find(x=>x.email === t.assigneeEmail)?.name || '--';
-                    return `
-                    <div class="flex items-center p-2 hover:bg-slate-50 cursor-pointer text-sm" onclick="showTaskModal('${t.id}')">
-                        <div class="w-8 text-center text-slate-400"><i class="far fa-circle"></i></div>
-                        <div class="flex-1 px-2 font-bold text-slate-800">${t.title}</div>
-                        <div class="w-32 px-2 text-slate-500 text-xs flex items-center gap-1"><div class="w-4 h-4 bg-slate-200 rounded-sm inline-block"></div> ${assignee.split(' ')[0]}</div>
-                        <div class="w-32 px-2 text-slate-500 text-xs">${t.dueDate || '--'}</div>
-                        <div class="w-24 px-2"><span class="text-[9px] uppercase font-bold px-1.5 rounded bg-slate-100">${t.priority}</span></div>
-                        <div class="w-32 px-2"><span class="text-[9px] uppercase font-bold text-slate-500">${t.status.replace('-', ' ')}</span></div>
-                    </div>`;
-                }).join('');
-            } else if (currentTaskView === 'board') {
-                const cols = {todo:[],inprogress:[],review:[],done:[]};
-                filteredTasks.forEach(t => { if(cols[t.status]) cols[t.status].push(t); else cols.todo.push(t); });
-                
-                document.getElementById('tasks-board-layout').innerHTML = ['todo','inprogress','review','done'].map(s => `
-                    <div class="bg-slate-50 rounded-xl p-3 kanban-col flex flex-col border border-slate-200">
-                        <h4 class="font-bold text-xs text-slate-500 uppercase tracking-widest mb-3 flex justify-between">${s.replace('inprogress', 'in progress')} <span>${cols[s].length}</span></h4>
-                        <div class="space-y-2 flex-1">
-                            ${cols[s].map(t => `
-                                <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-sm cursor-pointer task-card prio-${t.priority}" onclick="showTaskModal('${t.id}')">
-                                    <p class="font-bold text-sm text-slate-800 mb-2 leading-tight">${t.title}</p>
-                                    <div class="flex justify-between items-center text-[10px] text-slate-400 font-bold">
-                                        <span>${team.find(x=>x.email===t.assigneeEmail)?.name.split(' ')[0] || 'Unassigned'}</span>
-                                        ${t.dueDate ? `<span><i class="far fa-calendar"></i> ${t.dueDate.substring(5)}</span>` : ''}
-                                    </div>
-                                </div>
-                            `).join('')}
+            if(activeTaskView === 'list') {
+                document.getElementById('tasks-list-layout').classList.remove('hidden');
+                document.getElementById('tasks-board-layout').classList.add('hidden');
+                document.getElementById('tasks-list-container').innerHTML = filtered.map(t => `
+                    <div class="p-4 active:bg-slate-50 transition" onclick="showTaskModal('${t.id}')">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-[10px] font-bold text-brand uppercase">${t.status}</span>
+                            <span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded font-black uppercase">${t.priority}</span>
                         </div>
-                    </div>
-                `).join('');
+                        <h4 class="font-bold text-slate-800">${t.title}</h4>
+                        <div class="flex items-center justify-between mt-3 text-xs text-slate-400">
+                            <span><i class="far fa-user mr-1"></i> ${team.find(x=>x.email===t.assigneeEmail)?.name.split(' ')[0] || 'Unassigned'}</span>
+                            <span><i class="far fa-calendar-alt mr-1"></i> ${t.dueDate || 'No Date'}</span>
+                        </div>
+                    </div>`).join('');
+            } else {
+                document.getElementById('tasks-list-layout').classList.add('hidden');
+                document.getElementById('tasks-board-layout').classList.remove('hidden');
+                const cols = {todo:[],inprogress:[],done:[]};
+                filtered.forEach(t => { if(cols[t.status]) cols[t.status].push(t); else cols.todo.push(t); });
+                document.getElementById('tasks-board-layout').innerHTML = ['todo','inprogress','done'].map(s => `
+                    <div class="w-72 flex-shrink-0 space-y-3">
+                        <h5 class="text-xs font-bold uppercase text-slate-400 pl-2">${s} (${cols[s].length})</h5>
+                        ${cols[s].map(t => `<div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm task-card prio-${t.priority}" onclick="showTaskModal('${t.id}')">
+                            <p class="font-bold text-slate-800 text-sm">${t.title}</p>
+                        </div>`).join('')}
+                    </div>`).join('');
             }
         }
 
+        window.switchTaskView = (v) => { activeTaskView = v; renderTasks(); };
+
         window.showTaskModal = (id = null) => {
-            const m = document.getElementById('modal-task');
             document.getElementById('task-id').value = id || '';
-            document.getElementById('task-id-display').innerText = id ? `#${id.substring(id.length-6)}` : '#NEW';
-            document.getElementById('btn-delete-task').classList.toggle('hidden', !id);
-            
+            document.getElementById('task-id-display').innerText = id ? `#${id.substring(id.length-4)}` : '#NEW';
+            const statuses = ['todo', 'inprogress', 'done'];
+            document.getElementById('task-status').innerHTML = statuses.map(s => `<option value="${s}">${s.toUpperCase()}</option>`).join('');
             if(id) {
-                const t = tasks.find(x=>x.id===id);
+                const t = tasks.find(x => x.id === id);
                 document.getElementById('task-title').value = t.title;
                 document.getElementById('task-status').value = t.status;
                 document.getElementById('task-assignee').value = t.assigneeEmail || '';
                 document.getElementById('task-due').value = t.dueDate || '';
                 document.getElementById('task-priority').value = t.priority || 'normal';
-                document.getElementById('task-client').value = t.clientId || '';
                 quillTask.root.innerHTML = t.desc || '';
-                
-                // Set Timer data if exists
-                timerSeconds = t.trackedSeconds || 0;
-                updateTimerDisplay();
+                document.getElementById('btn-delete-task').classList.remove('hidden');
             } else {
                 document.getElementById('task-title').value = '';
                 document.getElementById('task-status').value = 'todo';
                 document.getElementById('task-assignee').value = '';
-                document.getElementById('task-due').value = '';
-                document.getElementById('task-priority').value = 'normal';
-                document.getElementById('task-client').value = '';
                 quillTask.root.innerHTML = '';
-                timerSeconds = 0; updateTimerDisplay();
+                document.getElementById('btn-delete-task').classList.add('hidden');
             }
             openModal('modal-task');
         };
 
         window.saveTask = () => {
             const id = document.getElementById('task-id').value || `t_${Date.now()}`;
-            const title = document.getElementById('task-title').value.trim();
-            if(!title) return alert("Task requires a title");
-
+            if(!document.getElementById('task-title').value) return;
             set(ref(db, `tasks/${id}`), {
-                id, title,
+                id, title: document.getElementById('task-title').value,
                 status: document.getElementById('task-status').value,
                 assigneeEmail: document.getElementById('task-assignee').value,
                 dueDate: document.getElementById('task-due').value,
                 priority: document.getElementById('task-priority').value,
-                clientId: document.getElementById('task-client').value,
+                spaceId: activeSpaceId || 'internal',
                 desc: quillTask.root.innerHTML,
-                trackedSeconds: timerSeconds,
                 updatedAt: Date.now()
             });
             closeModals();
         };
 
-        window.deleteTaskBtn = () => {
-            const id = document.getElementById('task-id').value;
-            if(id && confirm("Delete task?")) { remove(ref(db, `tasks/${id}`)); closeModals(); }
-        };
+        window.deleteTaskBtn = () => { if(confirm("Delete?")) { remove(ref(db, `tasks/${document.getElementById('task-id').value}`)); closeModals(); } };
 
-        // --- Task Time Tracking ---
-        window.toggleTimer = () => {
-            const btn = document.getElementById('btn-timer-toggle');
-            if(activeTimerInterval) {
-                clearInterval(activeTimerInterval); activeTimerInterval = null;
-                btn.innerHTML = '<i class="fas fa-play"></i>'; btn.className = "w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 hover:bg-emerald-200 flex items-center justify-center";
-            } else {
-                activeTimerInterval = setInterval(() => { timerSeconds++; updateTimerDisplay(); }, 1000);
-                btn.innerHTML = '<i class="fas fa-square"></i>'; btn.className = "w-8 h-8 rounded-full bg-red-100 text-red-600 hover:bg-red-200 flex items-center justify-center animate-pulse";
-            }
+        window.showDocModal = () => { document.getElementById('doc-title-input').value = ''; quillDoc.root.innerHTML = ''; openModal('modal-doc'); };
+        window.saveDocument = () => {
+            const title = document.getElementById('doc-title-input').value.trim();
+            if(!title) return;
+            const id = `doc_${Date.now()}`;
+            set(ref(db, `docs/${id}`), { id, title, content: quillDoc.root.innerHTML, createdBy: currentUser.name, ts: Date.now() });
+            closeModals();
         };
-        function updateTimerDisplay() {
-            const h = Math.floor(timerSeconds / 3600).toString().padStart(2,'0');
-            const m = Math.floor((timerSeconds % 3600) / 60).toString().padStart(2,'0');
-            const s = (timerSeconds % 60).toString().padStart(2,'0');
-            document.getElementById('task-timer-display').innerText = `${h}:${m}:${s}`;
+        function renderDocsGrid() {
+            document.getElementById('docs-grid').innerHTML = docs.map(d => `<div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm active:scale-95 transition" onclick="viewDoc('${d.id}')">
+                <div class="w-10 h-10 bg-slate-50 rounded flex items-center justify-center text-slate-400 mb-4"><i class="fas fa-file-alt"></i></div>
+                <h4 class="font-bold text-slate-900 truncate">${d.title}</h4>
+                <p class="text-[10px] text-slate-400 font-bold uppercase mt-1">BY ${d.createdBy.split(' ')[0]}</p>
+            </div>`).join('');
         }
-
-        // --- File Attachments (Firebase Storage) ---
-        document.getElementById('task-file-upload').addEventListener('change', async (e) => {
-            const file = e.target.files[0]; if(!file) return;
-            const taskId = document.getElementById('task-id').value;
-            if(!taskId) return alert("Please save the task first before attaching files.");
-            
-            const list = document.getElementById('task-attachments-list');
-            const loadingId = 'load_' + Date.now();
-            list.innerHTML += `<div id="${loadingId}" class="text-xs text-slate-500"><i class="fas fa-spinner fa-spin mr-1"></i> Uploading ${file.name}...</div>`;
-            
-            try {
-                const fRef = storageRef(storage, `tasks/${taskId}/${Date.now()}_${file.name}`);
-                await uploadBytesResumable(fRef, file);
-                const url = await getDownloadURL(fRef);
-                
-                // Save to DB
-                const t = tasks.find(x=>x.id===taskId);
-                const attachments = t.attachments || [];
-                attachments.push({ name: file.name, url, ts: Date.now() });
-                await update(ref(db, `tasks/${taskId}`), { attachments });
-                
-                document.getElementById(loadingId).remove();
-                alert("Upload successful!");
-            } catch(err) {
-                console.error("Upload error", err);
-                document.getElementById(loadingId).innerText = "Upload failed: " + err.message;
-            }
-        });
-
-
-        // ==========================================
-        // DOCS & FILES
-        // ==========================================
-        window.toggleDocType = (type) => {
-            document.getElementById('doc-editor-wrap').classList.add('hidden');
-            document.getElementById('doc-file-wrap').classList.add('hidden');
-            document.getElementById('doc-link-wrap').classList.add('hidden');
-            
-            if(type === 'native') document.getElementById('doc-editor-wrap').classList.remove('hidden');
-            if(type === 'file') document.getElementById('doc-file-wrap').classList.remove('hidden');
-            if(type === 'link') document.getElementById('doc-link-wrap').classList.remove('hidden');
-        };
-
-        document.getElementById('doc-file-input').addEventListener('change', (e) => {
-            if(e.target.files[0]) document.getElementById('doc-file-name-display').innerText = e.target.files[0].name;
-        });
-
-        window.showDocModal = () => {
-            document.getElementById('doc-title').value = '';
-            document.getElementById('doc-type-select').value = 'native';
-            quillDoc.root.innerHTML = '';
-            document.getElementById('doc-file-input').value = '';
-            document.getElementById('doc-file-name-display').innerText = 'No file selected.';
-            document.getElementById('doc-url-input').value = '';
-            toggleDocType('native');
+        window.viewDoc = (id) => {
+            const d = docs.find(x => x.id === id);
+            document.getElementById('doc-title-input').value = d.title;
+            quillDoc.root.innerHTML = d.content;
             openModal('modal-doc');
         };
 
-        window.saveDocument = async () => {
-            const title = document.getElementById('doc-title').value.trim();
-            if(!title) return alert("Title required");
-            const type = document.getElementById('doc-type-select').value;
-            const id = `doc_${Date.now()}`;
-            let payload = { id, title, type, createdBy: currentUser.name, ts: Date.now() };
-
-            if(type === 'native') {
-                payload.content = quillDoc.root.innerHTML;
-            } else if (type === 'link') {
-                payload.url = document.getElementById('doc-url-input').value;
-            } else if (type === 'file') {
-                const file = document.getElementById('doc-file-input').files[0];
-                if(!file) return alert("Please select a file.");
-                
-                const btn = event.target; btn.innerText = "Uploading..."; btn.disabled = true;
-                try {
-                    const fRef = storageRef(storage, `docs/${id}/${file.name}`);
-                    await uploadBytesResumable(fRef, file);
-                    payload.url = await getDownloadURL(fRef);
-                    payload.filename = file.name;
-                } catch(e) {
-                    alert("Upload failed."); btn.innerText = "Save"; btn.disabled = false; return;
-                }
-            }
-
-            await set(ref(db, `docs/${id}`), payload);
-            closeModals();
+        window.commitNewClient = () => {
+            const name = document.getElementById('new-client-name').value;
+            const date = document.getElementById('new-client-signup').value;
+            if(!name || !date) return alert("Fill details.");
+            const spaceId = `space_${Date.now()}`;
+            set(ref(db, `spaces/${spaceId}`), { id: spaceId, name: `${name} | ONBOARDING` });
+            switchMainView('home');
         };
 
-        function renderDocs() {
-            document.getElementById('docs-grid').innerHTML = docs.sort((a,b)=>b.ts-a.ts).map(d => {
-                let icon = 'fa-file-alt text-brand';
-                if(d.type === 'link') icon = 'fa-link text-blue-500';
-                if(d.type === 'file') icon = 'fa-file-pdf text-red-500';
-
-                return `
-                <div class="bg-white border border-slate-200 p-4 rounded-xl shadow-sm hover:shadow hover:border-brand cursor-pointer transition relative" onclick="openDoc('${d.id}')">
-                    <div class="w-10 h-10 bg-slate-50 rounded-lg flex items-center justify-center text-lg mb-3"><i class="fas ${icon}"></i></div>
-                    <h4 class="font-bold text-slate-800 text-sm truncate">${d.title}</h4>
-                    <p class="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-widest">${new Date(d.ts).toLocaleDateString()}</p>
-                </div>
-                `;
-            }).join('');
-        }
-
-        window.openDoc = (id) => {
-            const d = docs.find(x=>x.id===id); if(!d) return;
-            if(d.type === 'link' || d.type === 'file') {
-                window.open(d.url, '_blank');
-            } else {
-                // Future expansion: Open read-only modal for native docs
-                alert("Native doc viewer opening: " + d.title);
-            }
+        window.openModal = (id) => {
+            document.getElementById('modal-overlay').classList.remove('hidden');
+            document.getElementById(id).classList.remove('hidden');
         };
+        window.closeModals = () => {
+            document.getElementById('modal-overlay').classList.add('hidden');
+            document.querySelectorAll('.modal-content').forEach(d => d.classList.add('hidden'));
+        };
+        window.showCreateSpaceModal = () => { const n = prompt("Space Name:"); if(n) set(ref(db, `spaces/space_${Date.now()}`), { id: `space_${Date.now()}`, name: n }); };
 
         init();
     </script>
