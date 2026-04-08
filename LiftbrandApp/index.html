@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Liftbrand.ai | Agency Hub</title>
+
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#af4e30">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Liftbrand">
+    <link rel="apple-touch-icon" href="https://assets.cdn.filesafe.space/kStDsoJsyMuEVTowimeB/media/695e8653f4549a075dee967f.png">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800;900&display=swap');
+        
+        :root { --brand: #af4e30; --brand-hover: #8f3e25; --brand-light: #f5e4df; --creme: #fcfaf8; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--creme); color: #334155; font-size: 13px; }
+        h1, h2, h3, h4, .heading-font { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.03em; color: #0f172a; }
+        
+        .text-brand { color: var(--brand); } .bg-brand { background-color: var(--brand); color: white; }
+        .checked-text { text-decoration: line-through; color: #94a3b8; opacity: 0.6; }
+        .checkbox-custom { transition: all 0.2s ease; cursor: pointer; } .checkbox-custom:hover { transform: scale(1.05); }
+        .progress-bar { transition: width 0.8s cubic-bezier(0.65, 0, 0.35, 1); }
+        select, input, textarea { appearance: none; outline: none; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; } .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .glass-panel { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); border-radius: 24px; }
+        
+        .loader { border: 3px solid var(--brand-light); border-top: 3px solid var(--brand); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .current-week-glow { border-left: 4px solid var(--brand) !important; background-color: #fafaf9; }
+        .nav-btn { transition: all 0.2s; } .nav-btn.active { color: var(--brand); background: #fff1ee; }
+        .tab-btn { transition: all 0.2s; border-bottom: 2px solid transparent; }
+        .tab-btn.active { border-bottom-color: var(--brand); color: var(--brand); font-weight: 800; }
+
+        select.custom-select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 1rem; padding-right: 2rem; }
+        
+        .feature-checkbox:checked + div { background-color: var(--brand-light); border-color: var(--brand); }
+        .feature-checkbox:checked + div .chk-icon { color: var(--brand); opacity: 1; }
+        
+        /* Kanban */
+        .kanban-col { min-height: 500px; }
+        .task-card { transition: all 0.2s; }
+        .task-card:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border-color: var(--brand); }
+        .prio-low { background: #f1f5f9; color: #64748b; } .prio-med { background: #fef9c3; color: #d97706; }
+        .prio-high { background: #fee2e2; color: #dc2626; } .prio-urgent { background: #fecdd3; color: #991b1b; border: 1px solid #fca5a5; animation: pulse 2s infinite; }
+
+        /* Chat & Toasts */
+        .chat-bubble-out { background: var(--brand); color: white; border-radius: 18px 18px 4px 18px; }
+        .chat-bubble-in  { background: #f1f5f9; color: #1e293b; border-radius: 18px 18px 18px 4px; }
+        .chat-thread { scrollbar-width: thin; scrollbar-color: #e2e8f0 transparent; }
+        .chat-thread::-webkit-scrollbar { width: 4px; } .chat-thread::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 4px; }
+        .chat-contact:hover { background: #f8fafc; } .chat-contact.active { background: var(--brand-light); border-left: 3px solid var(--brand); }
+        .recording-pulse { animation: recordPulse 1s ease-in-out infinite; }
+        @keyframes recordPulse { 0%,100% { transform: scale(1); opacity:1; } 50% { transform: scale(1.15); opacity:0.8; } }
+        .notif-toast { transform: translateX(110%); transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .notif-toast.show { transform: translateX(0); }
+    </style>
+</head>
+<body>
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!-- LOGIN SCREEN (Google Auth)                             -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <div id="view-login" class="fixed inset-0 bg-[#fcfaf8] z-[100] flex flex-col items-center justify-center p-6">
+        <div class="glass-panel p-10 max-w-md w-full text-center shadow-2xl relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-2 bg-brand"></div>
+            <img src="https://assets.cdn.filesafe.space/kStDsoJsyMuEVTowimeB/media/695e8653f4549a075dee967f.png" alt="Liftbrand" class="h-24 mx-auto mb-6 object-contain" referrerpolicy="no-referrer">
+            <h2 class="text-3xl heading-font mb-2 text-slate-900">Agency Hub</h2>
+            <p class="text-sm text-slate-500 mb-8 font-medium">Secure team access only.</p>
+            
+            <button onclick="loginWithGoogle()" class="w-full bg-white border-2 border-slate-200 text-slate-700 font-black px-6 py-4 rounded-xl flex items-center justify-center gap-3 hover:bg-slate-50 hover:border-brand transition-all shadow-sm">
+                <svg class="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                Sign in with Google
+            </button>
+            <div id="login-error" class="hidden mt-4 text-xs font-bold text-red-500 bg-red-50 p-3 rounded-lg border border-red-100"></div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!-- NOTIFICATION TOAST                                     -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <div id="notif-toast" class="notif-toast fixed top-4 right-4 z-[60] max-w-xs w-full bg-white rounded-2xl shadow-2xl border border-slate-200 p-4 flex items-start gap-3">
+        <div class="w-9 h-9 bg-brand rounded-xl flex items-center justify-center flex-shrink-0"><i class="fas fa-bell text-white text-sm"></i></div>
+        <div class="flex-1 min-w-0">
+            <p id="toast-title" class="text-xs font-black text-slate-900 mb-0.5"></p>
+            <p id="toast-body" class="text-[11px] text-slate-500 leading-relaxed truncate"></p>
+        </div>
+        <button onclick="dismissToast()" class="text-slate-300 hover:text-slate-600 flex-shrink-0"><i class="fas fa-times"></i></button>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!-- MAIN NAVIGATION BAR                                    -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <div id="app-wrapper" class="hidden">
+        <div class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+            <div class="max-w-[1600px] mx-auto px-6 py-4 flex flex-col xl:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-6 cursor-pointer" onclick="switchMainView('hub')">
+                    <img src="https://assets.cdn.filesafe.space/kStDsoJsyMuEVTowimeB/media/695e8653f4549a075dee967f.png" alt="Liftbrand" class="h-12 md:h-16 object-contain transition-all" referrerpolicy="no-referrer">
+                    <div class="h-8 w-px bg-slate-200 hidden md:block"></div>
+                    <div class="hidden md:block">
+                        <h1 class="text-xl font-black heading-font tracking-tight text-slate-900">Liftbrand.ai</h1>
+                    </div>
+                </div>
+
+                <div class="flex flex-col md:flex-row items-center gap-3 w-full xl:w-auto">
+                    <div class="flex items-center gap-2 overflow-x-auto hide-scrollbar w-full md:w-auto bg-slate-50 p-1.5 rounded-2xl border border-slate-200 shadow-inner">
+                        <button onclick="switchMainView('hub')" id="nav-hub" class="nav-btn active px-4 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest text-slate-500 hover:text-brand whitespace-nowrap"><i class="fas fa-home mr-1"></i> Hub</button>
+                        <button onclick="switchMainView('clients')" id="nav-clients" class="nav-btn px-4 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest text-slate-500 hover:text-brand whitespace-nowrap"><i class="fas fa-briefcase mr-1"></i> Clients</button>
+                        <button onclick="switchMainView('tasks')" id="nav-tasks" class="nav-btn px-4 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest text-slate-500 hover:text-brand whitespace-nowrap"><i class="fas fa-check-double mr-1"></i> Tasks</button>
+                        <button onclick="switchMainView('trackers')" id="nav-trackers" class="nav-btn px-4 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest text-slate-500 hover:text-brand whitespace-nowrap"><i class="fas fa-table mr-1"></i> Trackers</button>
+                        <button onclick="switchMainView('dept-docs')" id="nav-dept-docs" class="nav-btn px-4 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest text-slate-500 hover:text-brand whitespace-nowrap"><i class="fas fa-folder-open mr-1"></i> Dept Docs</button>
+                        <button onclick="switchMainView('chat')" id="nav-chat" class="nav-btn px-4 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest text-slate-500 hover:text-brand whitespace-nowrap relative"><i class="fas fa-comments mr-1"></i> Chat <span id="chat-unread-badge" class="hidden absolute -top-1 -right-1 min-w-[16px] h-4 bg-red-500 text-white text-[8px] rounded-full flex items-center justify-center font-black px-1">0</span></button>
+                        <button onclick="switchMainView('team')" id="nav-team" class="nav-btn px-4 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest text-slate-500 hover:text-brand whitespace-nowrap"><i class="fas fa-users-cog mr-1"></i> Team</button>
+                    </div>
+
+                    <div id="current-user-pill" class="flex items-center gap-2 bg-brand-light px-4 py-2 rounded-xl border border-brand/20 cursor-pointer hover:bg-brand/10 transition-colors" onclick="handleSignOut()">
+                        <div id="user-pill-avatar" class="w-7 h-7 bg-brand text-white rounded-lg flex items-center justify-center text-[11px] font-black"></div>
+                        <div class="hidden sm:block text-left mr-2">
+                            <span id="user-pill-name" class="block text-[11px] font-black text-brand leading-tight"></span>
+                            <span id="user-pill-role" class="block text-[9px] font-bold text-brand/70 uppercase"></span>
+                        </div>
+                        <i class="fas fa-sign-out-alt text-brand/50 text-[10px]"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="max-w-[1600px] mx-auto p-4 md:p-8">
+
+            <!-- ══════════════════════════════════════════════════════ -->
+            <!-- VIEW: HUB -->
+            <!-- ══════════════════════════════════════════════════════ -->
+            <div id="view-hub" class="space-y-8">
+                <div class="text-center py-16">
+                    <h2 class="text-4xl md:text-5xl heading-font mb-4 text-slate-900">Welcome to Liftbrand.ai</h2>
+                    <p class="text-slate-500 text-base max-w-lg mx-auto font-medium">Select a module to manage clients, assign team tasks, or log your daily progress.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+                    <div onclick="switchMainView('clients')" class="glass-panel p-8 text-center hover:border-brand cursor-pointer transition-all hover:-translate-y-1 hover:shadow-xl bg-white">
+                        <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4 shadow-inner"><i class="fas fa-briefcase"></i></div>
+                        <h3 class="text-xl heading-font mb-2">Client Manager</h3>
+                        <p class="text-xs text-slate-500">Sales packages, onboarding, SOPs, and automated client timelines.</p>
+                    </div>
+                    <div onclick="switchMainView('tasks')" class="glass-panel p-8 text-center hover:border-brand cursor-pointer transition-all hover:-translate-y-1 hover:shadow-xl bg-white">
+                        <div class="w-16 h-16 bg-purple-100 text-purple-600 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4 shadow-inner"><i class="fas fa-check-double"></i></div>
+                        <h3 class="text-xl heading-font mb-2">Task Board</h3>
+                        <p class="text-xs text-slate-500">Agency-wide Kanban board. Set due dates, priorities, and assignees.</p>
+                    </div>
+                    <div onclick="switchMainView('trackers')" class="glass-panel p-8 text-center hover:border-brand cursor-pointer transition-all hover:-translate-y-1 hover:shadow-xl bg-white">
+                        <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4 shadow-inner"><i class="fas fa-table"></i></div>
+                        <h3 class="text-xl heading-font mb-2">Daily Trackers</h3>
+                        <p class="text-xs text-slate-500">Personalized team spreadsheets to log daily operations and timesheets.</p>
+                    </div>
+                    <div onclick="switchMainView('dept-docs')" class="glass-panel p-8 text-center hover:border-brand cursor-pointer transition-all hover:-translate-y-1 hover:shadow-xl bg-white">
+                        <div class="w-16 h-16 bg-amber-100 text-amber-600 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4 shadow-inner"><i class="fas fa-folder-open"></i></div>
+                        <h3 class="text-xl heading-font mb-2">Dept. Docs</h3>
+                        <p class="text-xs text-slate-500">Centralized Google Docs & Sheets for Media, Ads, AI, and Admin teams.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ══════════════════════════════════════════════════════ -->
+            <!-- VIEW: TEAM -->
+            <!-- ══════════════════════════════════════════════════════ -->
+            <div id="view-team" class="hidden max-w-4xl mx-auto">
+                <div class="flex justify-between items-end mb-8">
+                    <div>
+                        <h2 class="text-4xl heading-font text-slate-900 mb-2">Team Directory</h2>
+                        <p class="text-sm text-slate-500 font-medium">Manage access and administrator roles.</p>
+                    </div>
+                </div>
+
+                <!-- Admin Only Section -->
+                <div id="admin-team-controls" class="hidden glass-panel p-8 mb-8 bg-gradient-to-br from-white to-slate-50 border-t-4 border-t-slate-800 shadow-sm">
+                    <h4 class="text-xs font-black uppercase tracking-widest text-slate-800 mb-6"><i class="fas fa-shield-alt mr-2 text-brand"></i> Admin Access: Add Member</h4>
+                    <div class="flex flex-col md:flex-row gap-4 items-start">
+                        <div class="flex-1 w-full">
+                            <input type="text" id="team-name" placeholder="Full Name (e.g. Ali)" class="w-full p-4 rounded-xl border border-slate-200 outline-none focus:border-brand font-bold text-sm">
+                        </div>
+                        <div class="flex-1 w-full">
+                            <input type="email" id="team-email" placeholder="Google Email Address" class="w-full p-4 rounded-xl border border-slate-200 outline-none focus:border-brand font-bold text-sm">
+                            <p class="text-[9px] text-slate-400 mt-1 font-bold ml-1">Must be the email they use to Sign In with Google.</p>
+                        </div>
+                        <div class="flex items-center gap-3 pt-2 md:pt-0">
+                            <label class="flex items-center gap-2 cursor-pointer bg-white p-3 rounded-xl border border-slate-200 hover:border-brand transition-colors">
+                                <input type="checkbox" id="team-is-admin" class="w-4 h-4 accent-brand">
+                                <span class="text-xs font-black text-slate-700">Make Admin</span>
+                            </label>
+                            <button onclick="addTeamMember()" class="bg-slate-900 text-white px-8 py-4 rounded-xl font-black uppercase tracking-widest text-[11px] shadow-lg hover:bg-brand transition-colors whitespace-nowrap">Add User</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-panel overflow-hidden shadow-sm">
+                    <div class="bg-slate-50 p-6 border-b border-slate-200 flex justify-between items-center">
+                        <h4 class="text-xs font-black uppercase tracking-widest text-slate-800"><i class="fas fa-users mr-2 text-brand"></i> Registered Members</h4>
+                        <span id="team-count" class="bg-brand text-white px-4 py-1.5 rounded-full text-[11px] font-black shadow-sm">0</span>
+                    </div>
+                    <div id="team-list" class="divide-y divide-slate-100 p-2 bg-white"></div>
+                </div>
+            </div>
+
+            <!-- ══════════════════════════════════════════════════════ -->
+            <!-- VIEW: DEPARTMENT DOCS -->
+            <!-- ══════════════════════════════════════════════════════ -->
+            <div id="view-dept-docs" class="hidden">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+                    <div>
+                        <h2 class="text-4xl heading-font text-slate-900 mb-2">Department Documents</h2>
+                        <p class="text-sm text-slate-500 font-medium">Centralized SOPs, Google Docs, and Sheets for each team.</p>
+                    </div>
+                    <button onclick="showAddDocModal()" class="bg-brand text-white px-8 py-3 rounded-2xl font-black uppercase tracking-widest text-[11px] shadow-xl hover:bg-[#8f3e25] transition-all flex items-center gap-2">
+                        <i class="fas fa-plus"></i> Attach Document
+                    </button>
+                </div>
+
+                <div class="flex flex-col lg:flex-row gap-8">
+                    <!-- Dept Sidebar -->
+                    <div class="w-full lg:w-64 flex-shrink-0">
+                        <div class="glass-panel p-2 bg-white flex flex-row lg:flex-col overflow-x-auto hide-scrollbar gap-1" id="dept-nav">
+                            <button onclick="switchDept('Admin')" class="dept-btn active flex items-center gap-3 w-full text-left px-4 py-3 rounded-xl transition-all font-black text-xs uppercase tracking-widest text-brand bg-brand-light/50"><i class="fas fa-shield-alt w-4 text-center"></i> Admin Team</button>
+                            <button onclick="switchDept('Media')" class="dept-btn flex items-center gap-3 w-full text-left px-4 py-3 rounded-xl transition-all font-bold text-xs uppercase tracking-widest text-slate-500 hover:bg-slate-50 hover:text-slate-800"><i class="fas fa-photo-video w-4 text-center"></i> Media Team</button>
+                            <button onclick="switchDept('Ads')" class="dept-btn flex items-center gap-3 w-full text-left px-4 py-3 rounded-xl transition-all font-bold text-xs uppercase tracking-widest text-slate-500 hover:bg-slate-50 hover:text-slate-800"><i class="fas fa-bullseye w-4 text-center"></i> Ads Team</button>
+                            <button onclick="switchDept('SEO')" class="dept-btn flex items-center gap-3 w-full text-left px-4 py-3 rounded-xl transition-all font-bold text-xs uppercase tracking-widest text-slate-500 hover:bg-slate-50 hover:text-slate-800"><i class="fas fa-search w-4 text-center"></i> Google/SEO</button>
+                            <button onclick="switchDept('AI')" class="dept-btn flex items-center gap-3 w-full text-left px-4 py-3 rounded-xl transition-all font-bold text-xs uppercase tracking-widest text-slate-500 hover:bg-slate-50 hover:text-slate-800"><i class="fas fa-robot w-4 text-center"></i> AI Tools</button>
+                            <button onclick="switchDept('Reputation')" class="dept-btn flex items-center gap-3 w-full text-left px-4 py-3 rounded-xl transition-all font-bold text-xs uppercase tracking-widest text-slate-500 hover:bg-slate-50 hover:text-slate-800"><i class="fas fa-star w-4 text-center"></i> Reputation</button>
+                        </div>
+                    </div>
+                    <!-- Dept Content -->
+                    <div class="flex-1 min-w-0">
+                        <div class="glass-panel bg-white overflow-hidden shadow-sm min-h-[500px]">
+                            <div class="bg-slate-50 p-6 border-b border-slate-200">
+                                <h3 class="text-xl heading-font text-slate-900" id="current-dept-title">Admin Team Documents</h3>
+                            </div>
+                            <div id="dept-docs-container" class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <!-- Docs injected here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ══════════════════════════════════════════════════════ -->
+            <!-- VIEW: CLIENTS -->
+            <!-- ══════════════════════════════════════════════════════ -->
+            <div id="view-clients" class="hidden">
+                <!-- Client List -->
+                <div id="client-list-area">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                        <div class="glass-panel p-5 flex gap-8 bg-gradient-to-r from-white to-[var(--brand-light)] border-l-4 border-l-brand w-full md:w-auto shadow-sm">
+                            <div><span class="font-black text-slate-900 text-2xl" id="sum-clients">0</span> <span class="text-brand font-bold text-[10px] uppercase tracking-widest ml-1">Total Clients</span></div>
+                        </div>
+                        <div class="flex flex-col md:flex-row gap-4 w-full md:w-auto">
+                            <div class="relative w-full md:w-80">
+                                <i class="fas fa-search absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                                <input type="text" id="search-input" onkeyup="filterClients()" placeholder="Search clients..." class="w-full pl-12 pr-4 py-4 bg-white border border-slate-200 rounded-2xl outline-none focus:border-brand text-sm shadow-sm font-medium">
+                            </div>
+                            <button onclick="showAddClientModal()" class="bg-brand hover:bg-[#8f3e25] text-white px-6 py-4 rounded-2xl font-black transition-all text-[11px] uppercase tracking-widest shadow-xl flex items-center justify-center gap-3 w-full md:w-auto">
+                                <i class="fas fa-user-plus"></i> Sales Onboarding
+                            </button>
+                        </div>
+                    </div>
+                    <div id="clients-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8"></div>
+                </div>
+
+                <!-- Client Detail (Unified View) -->
+                <div id="client-detail-area" class="hidden">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
+                        <button onclick="closeClientDetail()" class="text-slate-500 hover:text-brand font-black flex items-center gap-2 text-[10px] uppercase tracking-widest transition-all bg-white px-5 py-3 rounded-xl border border-slate-200 shadow-sm hover:shadow-md">
+                            <i class="fas fa-arrow-left"></i> Back to Portfolio
+                        </button>
+                        <div class="flex gap-3 w-full sm:w-auto">
+                            <button onclick="deleteActiveClient()" class="text-red-500 hover:text-red-700 font-black text-[10px] uppercase tracking-widest px-4 hover:bg-red-50 rounded-xl transition-all hidden" id="btn-delete-client"><i class="fas fa-trash-alt mr-1"></i> Erase Client</button>
+                        </div>
+                    </div>
+
+                    <!-- Client Header Info -->
+                    <div class="glass-panel p-8 mb-8 relative overflow-hidden bg-white shadow-sm border-t-4 border-t-slate-800">
+                        <div class="flex flex-col lg:flex-row gap-8 items-start justify-between">
+                            <div class="flex items-center gap-6">
+                                <div class="w-20 h-20 bg-slate-900 rounded-[1.5rem] flex items-center justify-center text-white font-black text-4xl shadow-lg" id="cd-initial">C</div>
+                                <div>
+                                    <h2 id="cd-name" class="text-3xl font-black heading-font mb-2 text-slate-900">Client Name</h2>
+                                    <div class="flex flex-wrap items-center gap-3">
+                                        <span id="cd-tier-badge" class="px-3 py-1 bg-brand-light text-brand font-black text-[10px] uppercase tracking-widest rounded-lg">Foundation</span>
+                                        <span id="cd-loyalty-badge" class="hidden px-3 py-1 bg-amber-100 text-amber-700 font-black text-[10px] uppercase tracking-widest rounded-lg"><i class="fas fa-gem mr-1"></i> Loyalty Add-on</span>
+                                        <span id="cd-date" class="text-xs font-bold text-slate-400"><i class="fas fa-calendar-alt mr-1"></i> --</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 w-full lg:w-96">
+                                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Support Level</p>
+                                <p id="cd-support" class="text-sm font-bold text-slate-800"><i class="fas fa-shield-alt text-brand mr-1"></i> Private Team Group</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Sales Notes display -->
+                        <div class="mt-6 pt-6 border-t border-slate-100">
+                            <p class="text-[10px] font-black text-brand uppercase tracking-widest mb-2"><i class="fas fa-comment-dollar mr-1"></i> Sales Handover Notes</p>
+                            <p id="cd-sales-notes" class="text-sm text-slate-600 font-medium italic bg-[#fff1ee] p-4 rounded-xl border border-brand/20">No notes provided during onboarding.</p>
+                        </div>
+                    </div>
+
+                    <!-- Client Navigation Tabs -->
+                    <div class="flex border-b border-slate-200 mb-8 gap-8 overflow-x-auto hide-scrollbar">
+                        <button onclick="switchClientTab('sops')" id="ctab-sops" class="tab-btn active pb-4 text-xs font-black uppercase tracking-widest text-slate-500 whitespace-nowrap"><i class="fas fa-tasks mr-2"></i> Operation Timelines</button>
+                        <button onclick="switchClientTab('updates')" id="ctab-updates" class="tab-btn pb-4 text-xs font-black uppercase tracking-widest text-slate-500 whitespace-nowrap"><i class="fas fa-paper-plane mr-2"></i> Client Updates</button>
+                        <button onclick="switchClientTab('assets')" id="ctab-assets" class="tab-btn pb-4 text-xs font-black uppercase tracking-widest text-slate-500 whitespace-nowrap"><i class="fas fa-link mr-2"></i> Links & Assets</button>
+                        <button onclick="switchClientTab('notes')" id="ctab-notes" class="tab-btn pb-4 text-xs font-black uppercase tracking-widest text-slate-500 whitespace-nowrap"><i class="fas fa-edit mr-2"></i> Manager Notes</button>
+                    </div>
+
+                    <!-- Tab Content Areas -->
+                    <div id="cview-sops" class="space-y-6">
+                        <div class="flex flex-col sm:flex-row gap-4 items-center justify-between glass-panel p-5 bg-white shadow-sm">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-brand text-white rounded-xl flex items-center justify-center font-black text-lg shadow-md" id="calc-week-badge">W1</div>
+                                <div>
+                                    <p class="text-[10px] font-black uppercase tracking-widest text-brand">Active Timeline Phase</p>
+                                </div>
+                            </div>
+                            <select id="month-selector" onchange="renderUnifiedClientData()" class="w-full sm:w-auto bg-slate-50 border border-slate-200 p-3 rounded-xl font-bold text-xs cursor-pointer shadow-inner text-slate-700 outline-none min-w-[220px] focus:border-brand"></select>
+                        </div>
+                        <div id="sop-container" class="space-y-5"></div>
+                    </div>
+
+                    <div id="cview-updates" class="hidden space-y-6">
+                        <div id="updates-container" class="space-y-5"></div>
+                    </div>
+
+                    <div id="cview-assets" class="hidden">
+                        <div class="glass-panel p-8 bg-white shadow-sm max-w-2xl">
+                            <h3 class="text-xl heading-font mb-6 text-slate-900">Project Links & Credentials</h3>
+                            <div class="space-y-5">
+                                <div>
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">Live Website URL</label>
+                                    <input type="url" id="asset-web" class="w-full p-4 bg-slate-50 rounded-xl border border-slate-200 focus:border-brand font-bold text-sm outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">Google Drive Folder (Assets)</label>
+                                    <input type="url" id="asset-drive" class="w-full p-4 bg-slate-50 rounded-xl border border-slate-200 focus:border-brand font-bold text-sm outline-none">
+                                </div>
+                                <button onclick="saveClientAssets()" class="bg-slate-900 text-white px-8 py-4 rounded-xl font-black uppercase tracking-widest text-[11px] shadow-lg hover:bg-brand transition-all">Save Assets</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="cview-notes" class="hidden">
+                        <div class="glass-panel p-8 bg-white shadow-sm">
+                            <div class="flex justify-between items-center mb-6">
+                                <h3 class="text-xl heading-font text-slate-900">Internal Management Notes</h3>
+                                <p class="text-xs text-slate-500 font-bold bg-slate-100 px-3 py-1 rounded-lg">Auto-saves to Admin group</p>
+                            </div>
+                            <textarea id="client-mgmt-notes" placeholder="Log strategic adjustments, client requests, issues..." class="w-full h-64 bg-[#fcfaf8] rounded-2xl p-6 outline-none border border-slate-200 focus:border-brand focus:ring-4 focus:ring-brand/10 text-sm resize-none font-medium transition-all"></textarea>
+                            <button onclick="saveClientNotes()" id="btn-save-notes" class="mt-4 bg-brand text-white px-8 py-4 rounded-xl font-black uppercase tracking-widest text-[11px] shadow-lg hover:bg-[#8f3e25] transition-all"><i class="fas fa-save mr-2"></i> Sync Notes</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ══════════════════════════════════════════════════════ -->
+            <!-- VIEW: TASKS -->
+            <!-- ══════════════════════════════════════════════════════ -->
+            <div id="view-tasks" class="hidden">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+                    <h2 class="text-4xl heading-font text-slate-900">Task Board</h2>
+                    <button onclick="showTaskModal()" class="bg-brand text-white px-8 py-3 rounded-2xl font-black uppercase tracking-widest text-[11px] shadow-xl hover:bg-[#8f3e25] transition-all flex items-center gap-2"><i class="fas fa-plus"></i> Create Task</button>
+                </div>
+                <div class="flex gap-6 overflow-x-auto pb-8 hide-scrollbar snap-x">
+                    <div class="w-80 flex-shrink-0 bg-slate-100/50 rounded-[2rem] p-5 kanban-col border border-slate-200 snap-center" id="col-todo">
+                        <div class="flex items-center justify-between mb-5 px-1">
+                            <h4 class="font-black text-slate-700 text-sm uppercase tracking-widest flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-slate-400"></span> To Do</h4>
+                            <span class="bg-white text-slate-600 text-xs px-3 py-1 rounded-full font-bold shadow-sm border border-slate-200" id="cnt-todo">0</span>
+                        </div>
+                        <div class="space-y-4" id="list-todo"></div>
+                    </div>
+                    <div class="w-80 flex-shrink-0 bg-blue-50/50 rounded-[2rem] p-5 kanban-col border border-blue-100 snap-center" id="col-inprogress">
+                        <div class="flex items-center justify-between mb-5 px-1">
+                            <h4 class="font-black text-blue-800 text-sm uppercase tracking-widest flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span> In Progress</h4>
+                            <span class="bg-white text-blue-800 text-xs px-3 py-1 rounded-full font-bold shadow-sm border border-blue-100" id="cnt-inprogress">0</span>
+                        </div>
+                        <div class="space-y-4" id="list-inprogress"></div>
+                    </div>
+                    <div class="w-80 flex-shrink-0 bg-amber-50/50 rounded-[2rem] p-5 kanban-col border border-amber-100 snap-center" id="col-pending">
+                        <div class="flex items-center justify-between mb-5 px-1">
+                            <h4 class="font-black text-amber-800 text-sm uppercase tracking-widest flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse shadow-[0_0_8px_rgba(245,158,11,0.6)]"></span> Pending Client</h4>
+                            <span class="bg-white text-amber-800 text-xs px-3 py-1 rounded-full font-bold shadow-sm border border-amber-100" id="cnt-pending">0</span>
+                        </div>
+                        <div class="space-y-4" id="list-pending"></div>
+                    </div>
+                    <div class="w-80 flex-shrink-0 bg-emerald-50/50 rounded-[2rem] p-5 kanban-col border border-emerald-100 snap-center" id="col-completed">
+                        <div class="flex items-center justify-between mb-5 px-1">
+                            <h4 class="font-black text-emerald-800 text-sm uppercase tracking-widest flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Completed</h4>
+                            <span class="bg-white text-emerald-800 text-xs px-3 py-1 rounded-full font-bold shadow-sm border border-emerald-100" id="cnt-completed">0</span>
+                        </div>
+                        <div class="space-y-4" id="list-completed"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ══════════════════════════════════════════════════════ -->
+            <!-- VIEW: TRACKERS -->
+            <!-- ══════════════════════════════════════════════════════ -->
+            <div id="view-trackers" class="hidden">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+                    <div>
+                        <h2 class="text-4xl heading-font mb-2 text-slate-900">Team Trackers</h2>
+                        <p class="text-slate-500 text-sm font-medium">Create and manage customized workflow spreadsheets for team members.</p>
+                    </div>
+                    <button onclick="showNewTrackerModal()" class="bg-brand text-white px-6 py-4 rounded-xl font-black uppercase tracking-widest text-[11px] shadow-xl hover:bg-[#8f3e25] transition-all flex items-center gap-2 whitespace-nowrap"><i class="fas fa-file-excel"></i> Create Tracker</button>
+                </div>
+                <div id="active-tracker-view" class="hidden mb-12">
+                    <div class="glass-panel border-t-4 border-t-brand overflow-hidden shadow-lg bg-white">
+                        <div class="bg-[#fcfaf8] p-6 border-b border-slate-200 flex justify-between items-center">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-brand-light text-brand rounded-xl flex items-center justify-center font-black text-xl" id="tr-header-initial">T</div>
+                                <div>
+                                    <h3 class="text-xl font-black heading-font text-slate-900" id="tr-header-name">Tracker Name</h3>
+                                    <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mt-1" id="tr-header-meta">User Email</p>
+                                </div>
+                            </div>
+                            <button onclick="closeActiveTracker()" class="text-slate-400 hover:text-slate-800 bg-white border border-slate-200 p-2 rounded-lg shadow-sm transition-all hover:shadow"><i class="fas fa-times"></i></button>
+                        </div>
+                        <div class="p-0 overflow-x-auto min-h-[400px]">
+                            <table class="w-full text-left text-sm whitespace-nowrap">
+                                <thead class="bg-white text-slate-400 text-[10px] font-black uppercase tracking-widest border-b-2 border-slate-100">
+                                    <tr>
+                                        <th class="p-4 w-40">Date</th><th class="p-4 w-20 text-center">Day</th><th class="p-4 w-56">Client / Project</th><th class="p-4 w-64">Task Name</th><th class="p-4 min-w-[300px]">Description</th><th class="p-4 w-48">Status</th><th class="p-4 w-16 text-center"><i class="fas fa-cog"></i></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tracker-rows" class="divide-y divide-slate-50 bg-[#fcfaf8]/50"></tbody>
+                            </table>
+                        </div>
+                        <div class="p-5 bg-white border-t border-slate-100 flex justify-between items-center shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.02)]">
+                            <button onclick="addTrackerRow()" class="text-brand font-black text-[11px] uppercase tracking-widest hover:bg-brand-light px-5 py-3 rounded-xl transition-colors flex items-center gap-2"><i class="fas fa-plus-circle"></i> Add Row</button>
+                            <button onclick="saveActiveTracker()" class="bg-slate-900 text-white font-bold text-[11px] uppercase tracking-widest px-8 py-3 rounded-xl hover:bg-brand transition-all shadow-lg flex items-center gap-2"><i class="fas fa-save"></i> Save Tracker</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="trackers-list"></div>
+            </div>
+
+            <!-- ══════════════════════════════════════════════════════ -->
+            <!-- VIEW: CHAT -->
+            <!-- ══════════════════════════════════════════════════════ -->
+            <div id="view-chat" class="hidden">
+                <div class="flex h-[calc(100vh-200px)] min-h-[600px] glass-panel overflow-hidden shadow-lg bg-white">
+                    <div class="w-80 flex-shrink-0 border-r border-slate-100 flex flex-col bg-white">
+                        <div class="p-5 border-b border-slate-100">
+                            <h3 class="text-lg heading-font font-black text-slate-900 mb-4">Messages</h3>
+                            <div class="relative"><i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 text-xs"></i><input type="text" id="chat-search" oninput="filterChatContacts()" placeholder="Search team..." class="w-full pl-8 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium outline-none focus:border-brand transition-all"></div>
+                        </div>
+                        <div class="px-5 pt-4 pb-2"><div class="flex justify-between items-center"><p class="text-[9px] font-black uppercase tracking-widest text-slate-400">Group Channels</p><button onclick="showCreateGroupModal()" class="text-brand text-[9px] font-black hover:bg-brand-light px-2 py-1 rounded-lg transition-colors"><i class="fas fa-plus mr-1"></i> New</button></div></div>
+                        <div id="group-chat-list" class="px-3 pb-2 space-y-1"></div>
+                        <div class="px-5 pt-3 pb-2"><p class="text-[9px] font-black uppercase tracking-widest text-slate-400">Direct Messages</p></div>
+                        <div id="dm-chat-list" class="px-3 flex-1 overflow-y-auto space-y-1 pb-4 chat-thread"></div>
+                    </div>
+                    <div class="flex-1 flex flex-col bg-[#fcfaf8]">
+                        <div id="chat-empty-state" class="flex-1 flex flex-col items-center justify-center text-center p-8"><div class="w-20 h-20 bg-brand-light rounded-[1.5rem] flex items-center justify-center text-4xl mb-6"><i class="fas fa-comments text-brand"></i></div><h3 class="text-2xl heading-font mb-2 text-slate-900">Team Chat</h3><p class="text-sm text-slate-500 font-medium max-w-xs leading-relaxed">Select a person or group channel from the left to start messaging your team.</p></div>
+                        <div id="chat-window" class="hidden flex-1 flex flex-col">
+                            <div class="bg-white border-b border-slate-100 p-4 flex items-center gap-4 shadow-sm"><div id="chat-header-avatar" class="w-10 h-10 rounded-xl bg-brand flex items-center justify-center text-white font-black text-lg flex-shrink-0"></div><div class="flex-1 min-w-0"><h4 id="chat-header-name" class="text-sm font-black text-slate-900"></h4><p id="chat-header-meta" class="text-[10px] text-slate-400 font-medium"></p></div></div>
+                            <div id="chat-messages" class="flex-1 overflow-y-auto p-5 space-y-4 chat-thread"></div>
+                            <div id="typing-indicator" class="hidden px-5 pb-2"><div class="flex items-center gap-2"><div class="flex gap-1"><div class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style="animation-delay:0s"></div><div class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style="animation-delay:0.15s"></div><div class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style="animation-delay:0.3s"></div></div><span id="typing-name" class="text-[10px] text-slate-400 font-medium">Someone is typing...</span></div></div>
+                            <div class="bg-white border-t border-slate-100 p-4"><div id="recording-bar" class="hidden items-center gap-3 mb-3 bg-red-50 border border-red-200 rounded-xl p-3"><div class="recording-pulse w-3 h-3 bg-red-500 rounded-full flex-shrink-0"></div><span class="text-xs font-bold text-red-600">Recording...</span><span id="recording-timer" class="text-xs font-bold text-red-400 ml-auto">0:00</span><button onclick="cancelVoiceNote()" class="text-red-400 hover:text-red-600 text-xs font-bold"><i class="fas fa-times"></i> Cancel</button></div><div class="flex items-end gap-3"><button id="btn-mic" onmousedown="startVoiceNote()" onmouseup="stopVoiceNote()" ontouchstart="startVoiceNote()" ontouchend="stopVoiceNote()" class="w-10 h-10 bg-slate-100 text-slate-500 rounded-xl flex items-center justify-center hover:bg-red-50 hover:text-red-500 transition-all flex-shrink-0 touch-none" title="Hold to record voice note"><i class="fas fa-microphone text-sm"></i></button><div class="flex-1 relative"><textarea id="chat-input" placeholder="Type a message..." rows="1" onkeydown="handleChatKey(event)" oninput="autoResizeTextarea(this); handleTyping();" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:border-brand focus:ring-4 focus:ring-brand/10 transition-all resize-none max-h-32 leading-relaxed"></textarea></div><button onclick="sendChatMessage()" class="w-10 h-10 bg-brand text-white rounded-xl flex items-center justify-center hover:bg-[#8f3e25] transition-all flex-shrink-0 shadow-md"><i class="fas fa-paper-plane text-sm"></i></button></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- /main container -->
+
+        <!-- MODALS -->
+        <div id="modal-overlay" class="fixed inset-0 bg-slate-900/60 hidden flex items-center justify-center p-4 z-50 backdrop-blur-sm">
+            
+            <!-- Onboard Client Modal (Redesigned for Sales Packages) -->
+            <div id="modal-onboard" class="hidden bg-white rounded-[2.5rem] p-8 sm:p-10 max-w-3xl w-full shadow-2xl relative max-h-[90vh] overflow-y-auto">
+                <button onclick="closeModals()" class="absolute top-6 right-6 text-slate-400 hover:text-slate-800 bg-slate-100 p-2 rounded-full transition-colors"><i class="fas fa-times text-xl"></i></button>
+                <h3 class="text-3xl heading-font mb-2">Sales Onboarding</h3>
+                <p class="text-slate-500 text-sm mb-8 font-medium">Select a package tier to auto-generate the client's operational SOPs.</p>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-8 border-b border-slate-100 pb-8">
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">Client / Business Name</label>
+                        <input type="text" id="new-client-name" placeholder="e.g. Apex Medical" class="w-full p-4 bg-[#fcfaf8] rounded-xl border border-slate-200 focus:border-brand font-bold outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">Sign-Up Date</label>
+                        <input type="date" id="new-client-signup" class="w-full p-4 bg-[#fcfaf8] rounded-xl border border-slate-200 focus:border-brand font-bold text-brand outline-none">
+                    </div>
+                </div>
+
+                <div class="mb-8">
+                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-4 tracking-widest">1. Select Package Tier</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <!-- Foundation Tier -->
+                        <label class="relative cursor-pointer group">
+                            <input type="radio" name="tier_selection" value="foundation" class="peer hidden" onchange="renderPackageFeatures()" checked>
+                            <div class="border-2 border-slate-200 rounded-2xl p-6 peer-checked:border-brand peer-checked:bg-brand-light/30 transition-all hover:border-brand/50 h-full">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h4 class="text-lg font-black heading-font text-slate-900">Foundation</h4>
+                                    <div class="w-6 h-6 rounded-full border-2 border-slate-300 peer-checked:border-brand flex items-center justify-center bg-white"><div class="w-3 h-3 bg-brand rounded-full scale-0 peer-checked:scale-100 transition-transform"></div></div>
+                                </div>
+                                <p class="text-xs text-slate-500 font-medium">Essential tools to get found, get reviews, and capture leads.</p>
+                            </div>
+                        </label>
+                        <!-- Growth Tier -->
+                        <label class="relative cursor-pointer group">
+                            <input type="radio" name="tier_selection" value="growth" class="peer hidden" onchange="renderPackageFeatures()">
+                            <div class="border-2 border-slate-200 rounded-2xl p-6 peer-checked:border-brand peer-checked:bg-brand-light/30 transition-all hover:border-brand/50 h-full">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h4 class="text-lg font-black heading-font text-slate-900">Growth</h4>
+                                    <div class="w-6 h-6 rounded-full border-2 border-slate-300 peer-checked:border-brand flex items-center justify-center bg-white"><div class="w-3 h-3 bg-brand rounded-full scale-0 peer-checked:scale-100 transition-transform"></div></div>
+                                </div>
+                                <p class="text-xs text-slate-500 font-medium">Fully managed & automated to compound every single month.</p>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mb-8">
+                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-4 tracking-widest">2. Add-ons</label>
+                    <label class="relative cursor-pointer block">
+                        <input type="checkbox" id="loyalty-addon" class="feature-checkbox hidden">
+                        <div class="border-2 border-slate-200 rounded-2xl p-5 transition-all flex items-center justify-between hover:border-brand/50">
+                            <div>
+                                <h4 class="text-sm font-black text-slate-900"><i class="fas fa-gem text-amber-500 mr-2"></i> Advanced Loyalty Program</h4>
+                                <p class="text-xs text-slate-500 font-medium mt-1">Points & rewards system with automated win-back flows.</p>
+                            </div>
+                            <i class="fas fa-check-circle text-2xl text-slate-200 chk-icon transition-colors"></i>
+                        </div>
+                    </label>
+                </div>
+
+                <div class="mb-8 bg-slate-50 rounded-2xl p-6 border border-slate-200">
+                    <label class="block text-[10px] font-black text-slate-800 uppercase mb-4 tracking-widest">3. Customize Line Items (Optional)</label>
+                    <p class="text-xs text-slate-500 mb-4 font-medium">Uncheck any services that were negotiated out of this specific deal. SOPs will adjust automatically.</p>
+                    <div id="dynamic-features-list" class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-64 overflow-y-auto pr-2">
+                        <!-- Dynamic checkboxes injected here -->
+                    </div>
+                </div>
+
+                <div class="mb-8">
+                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">4. Sales Handover Notes</label>
+                    <textarea id="onboard-sales-notes" placeholder="Add any special client requests, ad budget notes, or context for the fulfillment team..." class="w-full h-32 p-4 bg-[#fcfaf8] rounded-xl border border-slate-200 focus:border-brand text-sm resize-none outline-none font-medium"></textarea>
+                </div>
+
+                <button onclick="commitNewClient()" class="w-full py-5 bg-brand text-white rounded-2xl text-[12px] font-black uppercase tracking-widest hover:bg-[#8f3e25] transition-all shadow-xl shadow-brand/30">Initialize Client Workspace</button>
+            </div>
+
+            <!-- Attach Document Modal -->
+            <div id="modal-attach-doc" class="hidden bg-white rounded-[2.5rem] p-8 sm:p-10 max-w-md w-full shadow-2xl relative">
+                <button onclick="closeModals()" class="absolute top-6 right-6 text-slate-400 hover:text-slate-800 bg-slate-100 p-2 rounded-full transition-colors"><i class="fas fa-times text-xl"></i></button>
+                <h3 class="text-3xl heading-font mb-2">Attach Document</h3>
+                <p class="text-sm text-slate-500 font-medium mb-8">Add a shared file to the <span id="attach-doc-dept-label" class="font-bold text-brand"></span> team folder.</p>
+                <div class="space-y-6 mb-8">
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">Document Title</label>
+                        <input type="text" id="new-doc-title" placeholder="e.g. Master Ad Copy Templates" class="w-full p-4 bg-[#fcfaf8] rounded-xl border border-slate-200 focus:border-brand font-bold outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">URL Link</label>
+                        <input type="url" id="new-doc-url" placeholder="https://docs.google.com/..." class="w-full p-4 bg-[#fcfaf8] rounded-xl border border-slate-200 focus:border-brand font-bold text-brand outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">File Type</label>
+                        <select id="new-doc-type" class="custom-select w-full p-4 bg-[#fcfaf8] rounded-xl border border-slate-200 focus:border-brand font-bold outline-none">
+                            <option value="doc">Google Doc (Word)</option>
+                            <option value="sheet">Google Sheet (Excel)</option>
+                            <option value="folder">Google Drive Folder</option>
+                            <option value="link">Other Link</option>
+                        </select>
+                    </div>
+                </div>
+                <button onclick="commitNewDoc()" class="w-full bg-brand text-white py-4 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-[#8f3e25] shadow-xl transition-all">Save Document</button>
+            </div>
+
+            <!-- Task Modal -->
+            <div id="modal-task" class="hidden bg-white rounded-[2.5rem] p-8 sm:p-10 max-w-2xl w-full shadow-2xl relative max-h-[90vh] overflow-y-auto">
+                <button onclick="closeModals()" class="absolute top-6 right-6 text-slate-400 hover:text-slate-800 bg-slate-100 p-2 rounded-full transition-colors"><i class="fas fa-times text-xl"></i></button>
+                <h3 class="text-3xl heading-font mb-8" id="task-modal-title">Create Task</h3>
+                <input type="hidden" id="task-id">
+                <div class="space-y-6">
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">Task Title</label>
+                        <input type="text" id="task-title" placeholder="What needs to be done?" class="w-full p-4 bg-[#fcfaf8] rounded-xl border border-slate-200 focus:border-brand font-bold outline-none transition-all">
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">Assignee</label>
+                            <select id="task-assignee" class="custom-select w-full p-4 bg-[#fcfaf8] rounded-xl border border-slate-200 focus:border-brand font-bold text-slate-700 outline-none transition-all"></select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">Related Client (Optional)</label>
+                            <select id="task-client" class="custom-select w-full p-4 bg-[#fcfaf8] rounded-xl border border-slate-200 focus:border-brand font-bold text-slate-700 outline-none transition-all"><option value="">-- General Agency Task --</option></select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">Priority</label>
+                            <select id="task-priority" class="custom-select w-full p-4 bg-[#fcfaf8] rounded-xl border border-slate-200 focus:border-brand font-bold text-slate-700 outline-none transition-all">
+                                <option value="low">Low</option><option value="med" selected>Medium</option><option value="high">High</option><option value="urgent">Urgent</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">Due Date</label>
+                            <input type="date" id="task-due" class="w-full p-4 bg-[#fcfaf8] rounded-xl border border-slate-200 focus:border-brand font-bold text-brand outline-none transition-all">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">Description & Notes</label>
+                        <textarea id="task-desc" class="w-full h-36 p-4 bg-[#fcfaf8] rounded-xl border border-slate-200 focus:border-brand text-sm resize-none outline-none font-medium transition-all"></textarea>
+                    </div>
+                    <div class="pt-6 border-t border-slate-100 flex justify-between items-center mt-4">
+                        <button onclick="deleteTaskBtn()" id="btn-delete-task" class="hidden text-red-500 font-black text-[11px] uppercase tracking-widest hover:text-red-700 px-4 py-2 hover:bg-red-50 rounded-lg transition-colors"><i class="fas fa-trash mr-1"></i> Delete</button>
+                        <button onclick="saveTask()" class="ml-auto bg-brand text-white px-10 py-4 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-[#8f3e25] shadow-xl shadow-brand/30 transition-all">Save Task</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Create Tracker Modal -->
+            <div id="modal-tracker" class="hidden bg-white rounded-[2.5rem] p-8 sm:p-10 max-w-md w-full shadow-2xl relative">
+                <button onclick="closeModals()" class="absolute top-6 right-6 text-slate-400 hover:text-slate-800 bg-slate-100 p-2 rounded-full transition-colors"><i class="fas fa-times text-xl"></i></button>
+                <h3 class="text-3xl heading-font mb-2">New Tracker</h3>
+                <p class="text-sm text-slate-500 font-medium mb-8">Create a personalized tracking spreadsheet.</p>
+                <div class="space-y-6 mb-8">
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">Team Member</label>
+                        <select id="new-tracker-user" class="custom-select w-full p-4 bg-[#fcfaf8] rounded-xl border border-slate-200 focus:border-brand font-bold outline-none transition-all"></select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">Tracker Name</label>
+                        <input type="text" id="new-tracker-name" placeholder="e.g. March Week 1" class="w-full p-4 bg-[#fcfaf8] rounded-xl border border-slate-200 focus:border-brand font-bold text-slate-800 outline-none transition-all">
+                    </div>
+                </div>
+                <button onclick="initTracker()" class="w-full bg-slate-900 text-white py-4 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-brand shadow-xl transition-all">Generate Tracker</button>
+            </div>
+
+            <!-- Create Group Chat Modal -->
+            <div id="modal-create-group" class="hidden bg-white rounded-[2.5rem] p-8 max-w-md w-full shadow-2xl relative">
+                <button onclick="closeModals()" class="absolute top-6 right-6 text-slate-400 hover:text-slate-800 bg-slate-100 p-2 rounded-full transition-colors"><i class="fas fa-times text-xl"></i></button>
+                <h3 class="text-2xl heading-font mb-2">New Group Channel</h3>
+                <p class="text-sm text-slate-500 mb-6 font-medium">Create a group chat for your team.</p>
+                <div class="space-y-5 mb-6">
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">Group Name</label>
+                        <input type="text" id="group-name-input" placeholder="e.g. SEO Team, All Hands" class="w-full p-4 bg-[#fcfaf8] rounded-xl border border-slate-200 focus:border-brand text-sm font-bold outline-none transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-3 tracking-widest">Add Members</label>
+                        <div id="group-member-checkboxes" class="space-y-2 max-h-48 overflow-y-auto"></div>
+                    </div>
+                </div>
+                <button onclick="createGroupChat()" class="w-full py-4 bg-brand text-white rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-[#8f3e25] shadow-xl transition-all">Create Group</button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT — Firebase + FCM + Auth -->
+    <script type="module">
+        import { initializeApp }   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getDatabase, ref, set, onValue, update, remove, get, query, orderByChild, limitToLast } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+        import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+        // Firebase Configuration (DO NOT CHANGE)
+        const firebaseConfig = {
+            apiKey:            "AIzaSyAYnKMSoja6Q9pRgdj303IdxnxFoH-TVEw",
+            authDomain:        "liftbrand-s--sops.firebaseapp.com",
+            projectId:         "liftbrand-s--sops",
+            databaseURL:       "https://liftbrand-s--sops-default-rtdb.firebaseio.com",
+            storageBucket:     "liftbrand-s--sops.firebasestorage.app",
+            messagingSenderId: "699084171927",
+            appId:             "1:699084171927:web:3f340d5be748c9b35b97d2"
+        };
+        const VAPID_KEY = "BBz4TlhnKNWFbNZaUSMNy5sGz-VyAvrDc08RZIIiVkfubEqXxz6WjIPdQhTKc1UsL60DAlKDJ_2WK1t9X2eVu-8";
+
+        let app, db, messaging, auth;
+
+        // Global State
+        let clients = [], team = [], tasks = [], trackers = [], deptDocs = [];
+        let activeClientId = null, activeClientTab = 'sops';
+        let activeTrackerId = null, activeTrackerRows = [];
+        let activeDept = 'Admin';
+        let currentUser = null; // Contains Firebase Auth user + custom claims (isAdmin)
+
+        // ── MASTER FEATURE DICTIONARY (Foundation vs Growth) ──
+        const FEATURES = {
+            seo_web:       { id: 'seo_web',       name: 'Custom-coded website', tier: 'foundation', dept: 'SEO' },
+            seo_gbp:       { id: 'seo_gbp',       name: 'GBP Setup & Optimization', tier: 'foundation', dept: 'SEO' },
+            seo_blog_2:    { id: 'seo_blog_2',    name: '2 Blog Articles / mo', tier: 'foundation', dept: 'SEO' },
+            seo_post_8:    { id: 'seo_post_8',    name: '8 Google Posts / mo', tier: 'foundation', dept: 'SEO' },
+            seo_audit:     { id: 'seo_audit',     name: 'Monthly SEO Audit', tier: 'foundation', dept: 'SEO' },
+            ads_1:         { id: 'ads_1',         name: '1 Ad Campaign (FB/Google)', tier: 'foundation', dept: 'Ads' },
+            rep_auto:      { id: 'rep_auto',      name: 'Reviews AI Auto-Responder', tier: 'foundation', dept: 'Reputation' },
+            rep_qr:        { id: 'rep_qr',        name: 'Branded QR Code Shields', tier: 'foundation', dept: 'Reputation' },
+            rep_react:     { id: 'rep_react',     name: 'Reactivation Campaign', tier: 'foundation', dept: 'Reputation' },
+            soc_8:         { id: 'soc_8',         name: '8 Social Posts / mo', tier: 'foundation', dept: 'Media' },
+            ai_chat:       { id: 'ai_chat',       name: 'Website Chat Widget', tier: 'foundation', dept: 'AI' },
+            
+            seo_geo:       { id: 'seo_geo',       name: '8 Geo-tagged Posts / mo', tier: 'growth', dept: 'SEO' },
+            seo_qa:        { id: 'seo_qa',        name: 'Google Q&A Managed', tier: 'growth', dept: 'SEO' },
+            seo_schema:    { id: 'seo_schema',    name: 'Schema Markup Added', tier: 'growth', dept: 'SEO' },
+            seo_pages:     { id: 'seo_pages',     name: '1 Service Area Page / mo', tier: 'growth', dept: 'SEO' },
+            seo_dirs:      { id: 'seo_dirs',      name: '3-5 Directory Subs / mo', tier: 'growth', dept: 'SEO' },
+            seo_blog_4:    { id: 'seo_blog_4',    name: '4 Blog Articles / mo', tier: 'growth', dept: 'SEO' },
+            ads_unlim:     { id: 'ads_unlim',     name: 'Unlimited Ad Campaigns', tier: 'growth', dept: 'Ads' },
+            ads_pixel:     { id: 'ads_pixel',     name: 'Pixel & Retargeting Setup', tier: 'growth', dept: 'Ads' },
+            rep_pos:       { id: 'rep_pos',       name: 'POS Connected Reviews', tier: 'growth', dept: 'Reputation' },
+            soc_12:        { id: 'soc_12',        name: '12 Social Posts (8 Image, 4 Video)', tier: 'growth', dept: 'Media' },
+            ai_agent:      { id: 'ai_agent',      name: 'AI Receptionist (Voice)', tier: 'growth', dept: 'AI' }
+        };
+
+        // INIT
+        async function init() {
+            try {
+                window.renderPackageFeatures = renderPackageFeatures;
+                window.renderActiveTrackerRows = renderActiveTrackerRows;
+                app  = initializeApp(firebaseConfig);
+                db   = getDatabase(app);
+                auth = getAuth(app);
+                messaging = getMessaging(app);
+
+                // Setup Auth Listener
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        const snapshot = await get(ref(db, 'team'));
+                        const teamData = snapshot.val() || {};
+                        const members = Object.values(teamData);
+                        
+                        const isHardcodedAdmin = user.email === 'ishamughal2004@gmail.com' || user.email === 'ismaeelahmad100@gmail.com';
+                        const dbUser = members.find(m => m.email.toLowerCase() === user.email.toLowerCase());
+
+                        if (dbUser || isHardcodedAdmin) {
+                            currentUser = {
+                                uid: user.uid,
+                                email: user.email,
+                                name: dbUser ? dbUser.name : user.displayName || 'Admin',
+                                isAdmin: isHardcodedAdmin || (dbUser && dbUser.isAdmin)
+                            };
+                            
+                            if (isHardcodedAdmin && !dbUser) {
+                                const id = Date.now().toString();
+                                await set(ref(db, 'team/' + id), { id, name: currentUser.name, email: currentUser.email, isAdmin: true });
+                            }
+
+                            document.getElementById('view-login').classList.add('hidden');
+                            document.getElementById('app-wrapper').classList.remove('hidden');
+                            
+                            document.getElementById('user-pill-name').innerText = currentUser.name;
+                            document.getElementById('user-pill-role').innerText = currentUser.isAdmin ? 'Admin' : 'Team';
+                            document.getElementById('user-pill-avatar').innerText = currentUser.name.charAt(0);
+                            
+                            if(currentUser.isAdmin) document.getElementById('admin-team-controls').classList.remove('hidden');
+                            if(currentUser.isAdmin) {
+                                const delBtn = document.getElementById('btn-delete-client');
+                                if(delBtn) delBtn.classList.remove('hidden');
+                            }
+
+                            listenToData();
+                            initNotifications();
+                            switchMainView('hub');
+                        } else {
+                            signOut(auth);
+                            const err = document.getElementById('login-error');
+                            err.innerText = "Access Denied. Ask an Admin to add your email to the Team Directory.";
+                            err.classList.remove('hidden');
+                        }
+                    } else {
+                        currentUser = null;
+                        document.getElementById('view-login').classList.remove('hidden');
+                        document.getElementById('app-wrapper').classList.add('hidden');
+                    }
+                });
+
+                if ('serviceWorker' in navigator) {
+                    try { await navigator.serviceWorker.register('/sw.js'); } catch(e) { }
+                }
+
+                window.loginWithGoogle = () => signInWithPopup(auth, new GoogleAuthProvider());
+                window.handleSignOut = () => { if(confirm('Sign out?')) signOut(auth); };
+            } catch(e) { console.error('[init]', e); }
+        }
+
+        // DATA LISTENERS
+        function listenToData() {
+            onValue(ref(db, '/'), snapshot => {
+                const data = snapshot.val() || {};
+                clients  = data.clients  ? Object.values(data.clients)  : [];
+                team     = data.team     ? Object.values(data.team)     : [];
+                tasks    = data.tasks    ? Object.values(data.tasks)    : [];
+                trackers = data.trackers ? Object.values(data.trackers) : [];
+                deptDocs = data.deptDocs ? Object.values(data.deptDocs) : [];
+
+                if (document.getElementById('sum-clients')) document.getElementById('sum-clients').innerText = clients.length;
+
+                renderClientList();
+                renderTeamList();
+                renderTaskBoard();
+                renderTrackersList();
+                renderDeptDocsList();
+
+                if (activeClientId) renderClientUnifiedView();
+
+                document.getElementById('loading').classList.add('hidden');
+            });
+        }
+
+        // NOTIFICATIONS
+        async function initNotifications() {
+            if (!currentUser || VAPID_KEY === 'PASTE_YOUR_VAPID_KEY_HERE') return;
+            try {
+                const permission = await Notification.requestPermission();
+                if (permission !== 'granted') return;
+                const swReg = await navigator.serviceWorker.ready;
+                const token = await getToken(messaging, { vapidKey: VAPID_KEY, serviceWorkerRegistration: swReg });
+                if (!token) return;
+                
+                const dbUser = team.find(t => t.email === currentUser.email);
+                if(dbUser) {
+                    const tokenKey = btoa(token).replace(/[/+=]/g, '').substring(0, 20);
+                    await update(ref(db, `team/${dbUser.id}/fcmTokens`), { [tokenKey]: token });
+                }
+
+                onMessage(messaging, payload => {
+                    showToast(payload.notification?.title || 'Liftbrand', payload.notification?.body || '');
+                });
+            } catch(e) { console.error('[FCM]', e); }
+        }
+
+        async function sendNotification(targetEmails, title, body, data = {}) {
+            if (!Array.isArray(targetEmails)) targetEmails = [targetEmails];
+            targetEmails = targetEmails.filter(e => e !== currentUser?.email);
+            if (targetEmails.length === 0) return;
+            try {
+                await fetch('/api/notify', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ targetEmails, title, body, data })
+                });
+            } catch(e) { }
+        }
+
+        let toastTimeout;
+        window.dismissToast = () => document.getElementById('notif-toast').classList.remove('show');
+        function showToast(title, body) {
+            const t = document.getElementById('notif-toast');
+            document.getElementById('toast-title').innerText = title; document.getElementById('toast-body').innerText = body;
+            t.classList.add('show'); clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => t.classList.remove('show'), 5000);
+        }
+
+        // NAVIGATION
+        window.switchMainView = (viewId) => {
+            const views = ['hub','clients','tasks','trackers','chat','team','dept-docs'];
+            views.forEach(v => {
+                document.getElementById(`view-${v}`)?.classList.add('hidden');
+                const btn = document.getElementById(`nav-${v}`);
+                if (btn) { btn.classList.remove('active','text-brand','bg-[#fff1ee]','shadow-sm'); btn.classList.add('text-slate-500'); }
+            });
+            document.getElementById(`view-${viewId}`)?.classList.remove('hidden');
+            const activeBtn = document.getElementById(`nav-${viewId}`);
+            if (activeBtn) { activeBtn.classList.add('active','text-brand','bg-[#fff1ee]','shadow-sm'); activeBtn.classList.remove('text-slate-500'); }
+            if (viewId === 'clients') {
+                document.getElementById('client-list-area').classList.remove('hidden');
+                document.getElementById('client-detail-area').classList.add('hidden');
+            }
+            if (viewId === 'dept-docs') switchDept('Admin');
+        };
+
+        window.closeModals = () => {
+            document.getElementById('modal-overlay').classList.add('hidden');
+            document.querySelectorAll('#modal-overlay > div').forEach(d => d.classList.add('hidden'));
+        };
+        function openSpecificModal(id) {
+            document.getElementById('modal-overlay').classList.remove('hidden');
+            document.querySelectorAll('#modal-overlay > div').forEach(d => d.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        // TEAM MANAGEMENT
+        window.addTeamMember = () => {
+            if(!currentUser.isAdmin) return alert("Only admins can add members.");
+            const name  = document.getElementById('team-name').value.trim();
+            const email = document.getElementById('team-email').value.trim().toLowerCase();
+            const isAdmin = document.getElementById('team-is-admin').checked;
+            if (!name || !email) return alert('Name and Email required.');
+            const id = Date.now().toString();
+            set(ref(db, 'team/' + id), { id, name, email, isAdmin });
+            document.getElementById('team-name').value  = ''; document.getElementById('team-email').value = '';
+            document.getElementById('team-is-admin').checked = false;
+        };
+
+        function renderTeamList() {
+            const list = document.getElementById('team-list');
+            document.getElementById('team-count').innerText = team.length;
+            list.innerHTML = team.map(t => `
+                <div class="p-5 flex justify-between items-center bg-white hover:bg-slate-50 transition-colors">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center font-black text-lg">${t.name.charAt(0)}</div>
+                        <div>
+                            <p class="text-base font-bold text-slate-800">${t.name} ${t.isAdmin ? '<span class="ml-2 text-[8px] bg-brand text-white px-2 py-0.5 rounded uppercase tracking-widest relative -top-0.5">Admin</span>' : ''}</p>
+                            <p class="text-xs font-medium text-slate-500">${t.email}</p>
+                        </div>
+                    </div>
+                    ${currentUser.isAdmin && t.email !== currentUser.email ? `<button onclick="removeTeamMember('${t.id}')" class="text-slate-300 hover:text-red-500 transition-colors p-2"><i class="fas fa-trash-alt text-lg"></i></button>` : ''}
+                </div>`).join('');
+            
+            const options = `<option value="">-- Unassigned --</option>` + team.map(t => `<option value="${t.email}">${t.name}</option>`).join('');
+            ['task-assignee','new-tracker-user'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) { const v = el.value; el.innerHTML = options; if (v) el.value = v; }
+            });
+        }
+        window.removeTeamMember = (id) => { if(confirm('Delete user?')) remove(ref(db, `team/${id}`)); };
+
+        // DEPT DOCS
+        window.switchDept = (dept) => {
+            activeDept = dept;
+            document.querySelectorAll('.dept-btn').forEach(btn => {
+                btn.className = 'dept-btn flex items-center gap-3 w-full text-left px-4 py-3 rounded-xl transition-all font-bold text-xs uppercase tracking-widest text-slate-500 hover:bg-slate-50 hover:text-slate-800';
+            });
+            const activeBtn = Array.from(document.querySelectorAll('.dept-btn')).find(b => b.innerText.includes(dept));
+            if(activeBtn) activeBtn.className = 'dept-btn active flex items-center gap-3 w-full text-left px-4 py-3 rounded-xl transition-all font-black text-xs uppercase tracking-widest text-brand bg-brand-light/50';
+            
+            document.getElementById('current-dept-title').innerText = `${dept} Team Documents`;
+            renderDeptDocsList();
+        };
+
+        function renderDeptDocsList() {
+            const container = document.getElementById('dept-docs-container');
+            const docs = deptDocs.filter(d => d.dept === activeDept);
+            if(docs.length === 0) {
+                container.innerHTML = `<div class="col-span-full py-12 text-center text-slate-400 font-bold uppercase tracking-widest text-xs border-2 border-dashed border-slate-100 rounded-2xl">No documents attached yet.</div>`;
+                return;
+            }
+            container.innerHTML = docs.map(d => {
+                let icon = 'fa-link text-slate-400';
+                if(d.type==='doc') icon = 'fa-file-word text-blue-500';
+                if(d.type==='sheet') icon = 'fa-file-excel text-emerald-500';
+                if(d.type==='folder') icon = 'fa-folder text-amber-400';
+                
+                return `
+                <div class="border border-slate-200 rounded-2xl p-5 hover:border-brand transition-colors group flex flex-col h-full bg-white shadow-sm hover:shadow-md">
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center"><i class="fas ${icon} text-xl"></i></div>
+                        ${currentUser.isAdmin ? `<button onclick="deleteDeptDoc('${d.id}')" class="text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"><i class="fas fa-trash"></i></button>` : ''}
+                    </div>
+                    <h4 class="font-black text-slate-800 text-sm mb-1">${d.title}</h4>
+                    <p class="text-[10px] text-slate-400 font-medium mb-4 truncate">${d.url}</p>
+                    <a href="${d.url}" target="_blank" class="mt-auto block text-center w-full bg-slate-50 text-slate-600 font-bold text-[10px] uppercase tracking-widest py-2.5 rounded-lg hover:bg-brand hover:text-white transition-colors">Open Document</a>
+                </div>`;
+            }).join('');
+        }
+
+        window.showAddDocModal = () => {
+            document.getElementById('attach-doc-dept-label').innerText = activeDept;
+            document.getElementById('new-doc-title').value = ''; document.getElementById('new-doc-url').value = '';
+            openSpecificModal('modal-attach-doc');
+        };
+
+        window.commitNewDoc = async () => {
+            const title = document.getElementById('new-doc-title').value.trim();
+            const url = document.getElementById('new-doc-url').value.trim();
+            const type = document.getElementById('new-doc-type').value;
+            if(!title || !url) return alert('Title and URL required.');
+            
+            const id = `doc_${Date.now()}`;
+            await set(ref(db, `deptDocs/${id}`), { id, title, url, type, dept: activeDept, addedBy: currentUser.name, ts: Date.now() });
+            
+            const adminEmails = team.filter(t => t.isAdmin).map(t => t.email);
+            sendNotification(adminEmails, `📂 New Doc in ${activeDept}`, `${currentUser.name} added: ${title}`);
+            
+            closeModals();
+        };
+        window.deleteDeptDoc = (id) => { if(confirm('Remove document?')) remove(ref(db, `deptDocs/${id}`)); };
+
+        // CLIENT MANAGEMENT & NEW SALES PACKAGES
+        function renderPackageFeatures() {
+            const tierInput = document.querySelector('input[name="tier_selection"]:checked');
+            if(!tierInput) return;
+            const tier = tierInput.value;
+            const container = document.getElementById('dynamic-features-list');
+            
+            const activeFeatures = Object.values(FEATURES).filter(f => 
+                tier === 'growth' ? true : f.tier === 'foundation'
+            );
+
+            container.innerHTML = activeFeatures.map(f => `
+                <label class="flex items-center justify-between p-3 bg-white border border-slate-200 rounded-xl cursor-pointer hover:border-brand transition-colors">
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" id="feat_${f.id}" value="${f.id}" class="w-4 h-4 accent-brand" checked>
+                        <div>
+                            <p class="text-xs font-bold text-slate-800">${f.name}</p>
+                            <p class="text-[9px] text-slate-400 font-black uppercase tracking-widest">${f.dept} Team</p>
+                        </div>
+                    </div>
+                </label>
+            `).join('');
+        }
+
+        window.showAddClientModal = () => {
+            document.getElementById('new-client-name').value = '';
+            document.getElementById('new-client-signup').value = new Date().toISOString().split('T')[0];
+            document.getElementById('onboard-sales-notes').value = '';
+            document.getElementById('loyalty-addon').checked = false;
+            const foundationInput = document.querySelector('input[name="tier_selection"][value="foundation"]');
+            if(foundationInput) foundationInput.checked = true;
+            renderPackageFeatures();
+            openSpecificModal('modal-onboard');
+        };
+
+        window.commitNewClient = async () => {
+            const name = document.getElementById('new-client-name').value.trim();
+            const signup = document.getElementById('new-client-signup').value;
+            const migrationToggle = document.getElementById('migration-toggle');
+            const isMigration = migrationToggle ? migrationToggle.checked : false;
+            const tierInput = document.querySelector('input[name="tier_selection"]:checked');
+            const tier = tierInput ? tierInput.value : 'foundation';
+            const loyalty = document.getElementById('loyalty-addon').checked;
+            const salesNotes = document.getElementById('onboard-sales-notes').value.trim();
+
+            if(!name || !signup) return alert("Name and Date required.");
+
+            const selectedFeatureIds = Array.from(document.querySelectorAll('#dynamic-features-list input[type="checkbox"]:checked')).map(cb => cb.value);
+            
+            const id = `cli_${Date.now()}`;
+            const clientData = {
+                id, name, signupDate: signup, tier, loyalty, salesNotes, 
+                features: selectedFeatureIds, created: Date.now(),
+                onboarded: isMigration,
+                onboardedAt: isMigration ? new Date(signup).getTime() : null,
+                status: 'active'
+            };
+
+            await set(ref(db, `clients/${id}`), clientData);
+
+            const allEmails = team.map(t => t.email);
+            sendNotification(allEmails, `🎉 New Client: ${name}`, `Tier: ${tier.toUpperCase()} ${loyalty ? '(+Loyalty)' : ''}`);
+            
+            closeModals(); switchMainView('clients');
+        };
+
+        window.renderClientList = () => {
+            const container = document.getElementById('clients-container');
+            if(clients.length === 0) return container.innerHTML = `<div class="col-span-full py-24 text-center bg-white rounded-3xl border border-dashed border-slate-300"><p class="text-slate-400 font-bold uppercase tracking-widest">No Clients Found</p></div>`;
+            
+            const searchEl = document.getElementById('search-input');
+            const term = searchEl ? searchEl.value.toLowerCase() : '';
+            const filtered = clients.filter(c => c.name.toLowerCase().includes(term));
+
+            container.innerHTML = filtered.sort((a,b)=>b.created - a.created).map(c => {
+                const tierColor = c.tier === 'growth' ? 'bg-purple-100 text-purple-700' : 'bg-brand-light text-brand';
+                const obStatus = c.onboarded ? `<span class="text-[9px] font-black text-emerald-500 bg-emerald-50 px-2 py-1 rounded uppercase tracking-widest"><i class="fas fa-check-circle"></i> Live</span>` : `<span class="text-[9px] font-black text-amber-500 bg-amber-50 px-2 py-1 rounded uppercase tracking-widest animate-pulse"><i class="fas fa-lock"></i> Pending OB</span>`;
+                
+                return `
+                <div onclick="showDetailView('${c.id}')" class="glass-panel p-6 bg-white hover:border-brand cursor-pointer shadow-sm transition-all flex flex-col relative hover:-translate-y-1 hover:shadow-xl">
+                    <div class="flex items-start gap-4 mb-4">
+                        <div class="w-12 h-12 bg-slate-900 rounded-xl flex items-center justify-center text-white font-black text-lg shadow-md flex-shrink-0">${c.name.charAt(0)}</div>
+                        <div class="min-w-0">
+                            <h3 class="text-xl heading-font leading-tight tracking-tight text-slate-900 truncate">${c.name}</h3>
+                            <div class="flex items-center gap-2 mt-1.5">
+                                <span class="px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest ${tierColor}">${c.tier||'Custom'}</span>
+                                ${c.loyalty ? `<span class="px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest bg-amber-100 text-amber-700"><i class="fas fa-gem"></i></span>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-auto border-t border-slate-100 pt-4 flex justify-between items-center">
+                        <p class="text-[9px] font-bold text-slate-400"><i class="fas fa-calendar-alt"></i> ${c.signupDate||'--'}</p>
+                        ${obStatus}
+                    </div>
+                </div>`;
+            }).join('');
+        };
+
+        window.filterClients = () => renderClientList();
+
+        window.showDetailView = (id) => {
+            activeClientId = id; activeClientTab = 'sops';
+            renderClientUnifiedView();
+            document.getElementById('client-list-area').classList.add('hidden');
+            document.getElementById('client-detail-area').classList.remove('hidden');
+        };
+        window.closeClientDetail = () => { activeClientId = null; document.getElementById('client-list-area').classList.remove('hidden'); document.getElementById('client-detail-area').classList.add('hidden'); };
+        window.deleteActiveClient = () => { if(confirm("ERASE ENTIRE CLIENT?")) { remove(ref(db, `clients/${activeClientId}`)); closeClientDetail(); } };
+        window.switchClientTab = (tab) => { activeClientTab = tab; renderClientUnifiedView(); };
+
+        window.renderClientUnifiedView = () => {
+            if(!activeClientId) return;
+            const c = clients.find(x => x.id === activeClientId);
+            if(!c) return;
+
+            document.getElementById('cd-name').innerText = c.name;
+            document.getElementById('cd-initial').innerText = c.name.charAt(0);
+            document.getElementById('cd-date').innerHTML = `<i class="fas fa-calendar-alt mr-1"></i> ${c.signupDate||'--'}`;
+            document.getElementById('cd-tier-badge').innerText = (c.tier||'Custom') + " Tier";
+            document.getElementById('cd-tier-badge').className = c.tier === 'growth' ? 'px-3 py-1 bg-purple-100 text-purple-700 font-black text-[10px] uppercase tracking-widest rounded-lg' : 'px-3 py-1 bg-brand-light text-brand font-black text-[10px] uppercase tracking-widest rounded-lg';
+            
+            if(c.loyalty) document.getElementById('cd-loyalty-badge').classList.remove('hidden');
+            else document.getElementById('cd-loyalty-badge').classList.add('hidden');
+
+            document.getElementById('cd-support').innerHTML = c.tier === 'growth' ? `<i class="fas fa-shield-alt text-purple-600 mr-1"></i> 24/7 Priority Support` : `<i class="fas fa-shield-alt text-brand mr-1"></i> Private Team Group`;
+            document.getElementById('cd-sales-notes').innerText = c.salesNotes || "No notes provided during onboarding.";
+
+            ['sops','updates','assets','notes'].forEach(t => {
+                document.getElementById(`ctab-${t}`).className = t === activeClientTab ? 'tab-btn active pb-4 text-xs font-black uppercase tracking-widest whitespace-nowrap' : 'tab-btn pb-4 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-700 whitespace-nowrap';
+                document.getElementById(`cview-${t}`).classList.add('hidden');
+            });
+            document.getElementById(`cview-${activeClientTab}`).classList.remove('hidden');
+
+            document.getElementById('client-mgmt-notes').value = c.mgmtNotes || '';
+            document.getElementById('asset-web').value = c.assets?.web || '';
+            document.getElementById('asset-drive').value = c.assets?.drive || '';
+
+            const obGate = document.getElementById('onboarding-gate');
+            const tlArea = document.getElementById('timeline-area');
+
+            if(!c.onboarded) {
+                obGate.classList.remove('hidden'); tlArea.classList.add('hidden');
+                let reqs = [];
+                if(c.features?.includes('seo_gbp')) reqs.push({id:'req_gbp', text: 'Secure Google Business Profile Access'});
+                if(c.features?.includes('seo_web')) reqs.push({id:'req_web', text: 'Secure CMS/Website Access'});
+                if(c.features?.includes('ads_1') || c.features?.includes('ads_unlim')) reqs.push({id:'req_ads', text: 'Secure Ad Account & Business Manager'});
+                if(c.features?.includes('soc_8') || c.features?.includes('soc_12')) reqs.push({id:'req_soc', text: 'Secure Meta/Social Media Credentials'});
+                
+                document.getElementById('onboarding-tasks').innerHTML = reqs.map(r => {
+                    const isC = c.reqs?.[r.id];
+                    return `<div onclick="toggleClientReq('${r.id}')" class="flex items-center gap-4 bg-[#fcfaf8] p-4 rounded-xl border border-slate-200 cursor-pointer hover:border-brand transition-colors"><div class="w-6 h-6 rounded border-2 flex items-center justify-center ${isC?'bg-brand border-brand':'border-slate-300 bg-white'}">${isC?'<i class="fas fa-check text-white text-[10px]"></i>':''}</div><span class="font-bold text-sm ${isC?'checked-text':'text-slate-800'}">${r.text}</span></div>`;
+                }).join('');
+            } else {
+                obGate.classList.add('hidden'); tlArea.classList.remove('hidden');
+                
+                const tlInfo = calculateTimeline(c.onboardedAt);
+                document.getElementById('calc-week-badge').innerText=`W${tlInfo.week}`;
+                document.getElementById('calc-date-range').innerText=`Started: ${new Date(c.onboardedAt).toLocaleDateString()}`;
+                
+                if(activeClientTab === 'sops') renderDynamicSOPs(c, tlInfo);
+            }
+        };
+
+        window.toggleClientReq = (reqId) => {
+            const c = clients.find(x => x.id === activeClientId);
+            const current = c.reqs?.[reqId];
+            update(ref(db, `clients/${activeClientId}/reqs`), {[reqId]: !current});
+        };
+
+        window.completeOnboarding = () => {
+            update(ref(db, `clients/${activeClientId}`), { onboarded: true, onboardedAt: Date.now() });
+        };
+
+        window.saveClientNotes = () => {
+            const text = document.getElementById('client-mgmt-notes').value;
+            update(ref(db, `clients/${activeClientId}`), { mgmtNotes: text }).then(() => {
+                const btn = document.getElementById('btn-save-notes'); btn.innerHTML = `<i class="fas fa-check mr-2"></i> Synced!`; setTimeout(() => btn.innerHTML = `<i class="fas fa-save mr-2"></i> Sync Notes`, 2000);
+                const adminEmails = team.filter(t => t.isAdmin).map(t => t.email);
+                const c = clients.find(x=>x.id===activeClientId);
+                sendNotification(adminEmails, `📝 Note Added: ${c.name}`, text.substring(0,60));
+            });
+        };
+
+        window.saveClientAssets = () => {
+            const web = document.getElementById('asset-web').value;
+            const drive = document.getElementById('asset-drive').value;
+            update(ref(db, `clients/${activeClientId}/assets`), { web, drive }).then(() => alert("Assets Saved"));
+        };
+
+        function renderDynamicSOPs(c, tlInfo) {
+            let blocks = [];
+            
+            if(c.features?.includes('seo_web')) {
+                blocks.push({ week: 'Week 1', title: 'Website Architecture', task: 'Develop Core Architecture & Legal Pages', dept: 'SEO' });
+            }
+            if(c.features?.includes('seo_gbp')) {
+                blocks.push({ week: 'Week 1', title: 'GBP Optimization', task: 'Execute Advanced GBP Optimization', dept: 'SEO' });
+            }
+            if(c.features?.includes('ads_1') || c.features?.includes('ads_unlim')) {
+                blocks.push({ week: 'Week 1', title: 'Ad Creatives', task: 'Develop Strategic Ad Copies & Creatives', dept: 'Ads' });
+                blocks.push({ week: 'Week 2', title: 'Campaign Launch', task: 'Deploy & Launch Campaigns in Ads Manager', dept: 'Ads' });
+            }
+
+            const container = document.getElementById('sop-container');
+            if(blocks.length === 0) {
+                container.innerHTML = `<div class="p-12 text-center text-slate-400 font-bold uppercase text-xs tracking-widest border border-dashed border-slate-300 rounded-3xl bg-white shadow-sm">No specific tasks generated for these features.</div>`;
+                return;
+            }
+
+            const grouped = blocks.reduce((acc, obj) => {
+                const key = obj.week; if (!acc[key]) acc[key] = []; acc[key].push(obj); return acc;
+            }, {});
+
+            container.innerHTML = Object.keys(grouped).map(weekName => {
+                return `
+                <div class="bg-white rounded-[1.5rem] border border-slate-200 overflow-hidden shadow-sm transition-all">
+                    <div class="bg-[#fcfaf8] px-6 py-4 border-b border-slate-100 font-black text-[10px] uppercase tracking-widest text-slate-500 flex justify-between">
+                        <span>${weekName}</span>
+                    </div>
+                    <div class="divide-y divide-slate-100">
+                        ${grouped[weekName].map((t, idx) => {
+                            const tid = `task_${weekName.replace(/\s/g,'')}_${idx}`;
+                            const isDone = c.tasks?.[tid];
+                            return `
+                            <div onclick="toggleClientTask('${tid}')" class="flex items-center gap-5 px-6 py-5 hover:bg-slate-50 cursor-pointer transition-all">
+                                <div class="w-6 h-6 rounded border-2 flex items-center justify-center checkbox-custom" style="${isDone?'background-color:var(--brand);border-color:var(--brand)':'border-color:#cbd5e1'}">
+                                    ${isDone?'<i class="fas fa-check text-white text-[9px]"></i>':''}
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm font-bold ${isDone?'checked-text':'text-slate-800'}">${t.task}</p>
+                                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1">${t.dept} Team • ${t.title}</p>
+                                </div>
+                            </div>`;
+                        }).join('')}
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        window.toggleClientTask = (tid) => {
+            const c = clients.find(x => x.id === activeClientId);
+            const current = c.tasks?.[tid];
+            update(ref(db, `clients/${activeClientId}/tasks`), {[tid]: !current});
+        };
+
+        // TASK BOARD
+        window.showTaskModal = (taskId = null) => {
+            document.getElementById('task-client').innerHTML = `<option value="">-- General Agency Task --</option>` + clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            if (taskId) {
+                const t = tasks.find(x => x.id === taskId);
+                document.getElementById('task-modal-title').innerText = 'Edit Task';
+                document.getElementById('task-id').value              = t.id;
+                document.getElementById('task-title').value           = t.title;
+                document.getElementById('task-desc').value            = t.desc || '';
+                document.getElementById('task-priority').value        = t.priority || 'med';
+                document.getElementById('task-due').value             = t.dueDate || '';
+                document.getElementById('task-assignee').value        = t.assigneeEmail || '';
+                document.getElementById('task-client').value          = t.clientId || '';
+                document.getElementById('btn-delete-task').classList.remove('hidden');
+            } else {
+                document.getElementById('task-modal-title').innerText = 'Create New Task';
+                document.getElementById('task-id').value              = '';
+                document.getElementById('task-title').value           = '';
+                document.getElementById('task-desc').value            = '';
+                document.getElementById('task-priority').value        = 'med';
+                document.getElementById('task-due').value             = '';
+                document.getElementById('task-assignee').value        = '';
+                document.getElementById('task-client').value          = '';
+                document.getElementById('btn-delete-task').classList.add('hidden');
+            }
+            openSpecificModal('modal-task');
+        };
+
+        window.saveTask = () => {
+            const id    = document.getElementById('task-id').value || Date.now().toString();
+            const isNew = !document.getElementById('task-id').value;
+            const data  = {
+                id, title: document.getElementById('task-title').value.trim(),
+                desc: document.getElementById('task-desc').value.trim(),
+                priority: document.getElementById('task-priority').value,
+                dueDate:  document.getElementById('task-due').value,
+                assigneeEmail: document.getElementById('task-assignee').value,
+                clientId: document.getElementById('task-client').value,
+                status:   isNew ? 'todo' : (tasks.find(x => x.id === id)?.status || 'todo'),
+                updatedAt: Date.now()
+            };
+            if (!data.title) return alert('Task title is required.');
+            update(ref(db, `tasks/${id}`), data).then(() => {
+                if (isNew && data.assigneeEmail) {
+                    const clientName = data.clientId ? (clients.find(c => c.id === data.clientId)?.name || 'Internal') : 'Internal';
+                    const dueStr     = data.dueDate ? ` · Due ${new Date(data.dueDate).toLocaleDateString()}` : '';
+                    sendNotification(data.assigneeEmail, `📋 New Task Assigned`, `${data.title} — ${clientName}${dueStr}`);
+                }
+                closeModals();
+            });
+        };
+
+        window.deleteTaskBtn = () => {
+            const id = document.getElementById('task-id').value;
+            if (confirm('Delete this task?')) { remove(ref(db, `tasks/${id}`)); closeModals(); }
+        };
+
+        window.updateTaskStatus = (id, newStatus) => update(ref(db, `tasks/${id}`), { status: newStatus });
+
+        function renderTaskBoard() {
+            const cols = { todo: [], inprogress: [], pending: [], completed: [] };
+            tasks.forEach(t => { if (cols[t.status]) cols[t.status].push(t); else cols.todo.push(t); });
+            ['todo','inprogress','pending','completed'].forEach(s => {
+                document.getElementById(`cnt-${s}`).innerText = cols[s].length;
+                document.getElementById(`list-${s}`).innerHTML = cols[s].sort((a,b) => b.updatedAt - a.updatedAt).map(t => {
+                    const cName = t.clientId ? clients.find(c => c.id === t.clientId)?.name : null;
+                    const aName = team.find(x => x.email === t.assigneeEmail)?.name || 'Unassigned';
+                    const pCls  = t.priority === 'urgent' ? 'prio-urgent' : t.priority === 'high' ? 'prio-high' : t.priority === 'med' ? 'prio-med' : 'prio-low';
+                    const isOverdue = t.dueDate && new Date(t.dueDate) < new Date() && t.status !== 'completed';
+                    const opts  = ['todo','inprogress','pending','completed'].map(v => `<option value="${v}" ${t.status===v?'selected':''}>${v==='todo'?'To Do':v==='inprogress'?'In Progress':v==='pending'?'Pending Client':'Completed'}</option>`).join('');
+                    return `
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 task-card cursor-pointer shadow-sm relative group" onclick="showTaskModal('${t.id}')">
+                        <div class="flex justify-between items-start mb-3">
+                            <span class="text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded ${pCls}">${t.priority}</span>
+                            <select onclick="event.stopPropagation()" onchange="updateTaskStatus('${t.id}', this.value)" class="text-[10px] font-bold text-slate-500 bg-slate-50 border border-slate-200 rounded px-1 py-0.5 outline-none cursor-pointer hover:bg-slate-100 transition-colors">${opts}</select>
+                        </div>
+                        <h5 class="text-sm font-bold text-slate-800 mb-1 leading-snug">${t.title}</h5>
+                        ${cName ? `<p class="text-[10px] text-brand font-bold uppercase tracking-widest mb-3 truncate"><i class="fas fa-briefcase"></i> ${cName}</p>` : ''}
+                        <div class="mt-4 flex justify-between items-center border-t border-slate-50 pt-3">
+                            <div class="flex items-center gap-2 text-[10px] text-slate-500 font-bold"><div class="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-slate-700">${aName.charAt(0)}</div> ${aName}</div>
+                            ${t.dueDate ? `<span class="text-[10px] font-bold px-2 py-1 rounded ${isOverdue?'text-red-500 bg-red-50':'text-slate-400 bg-slate-50'}"><i class="far fa-calendar-alt"></i> ${new Date(t.dueDate).toLocaleDateString(undefined,{month:'short',day:'numeric'})}</span>` : ''}
+                        </div>
+                    </div>`;
+                }).join('');
+            });
+        }
+
+        // TRACKERS
+        window.showNewTrackerModal = () => { openSpecificModal('modal-tracker'); document.getElementById('new-tracker-name').value = ''; };
+
+        window.initTracker = () => {
+            const email = document.getElementById('new-tracker-user').value;
+            const name  = document.getElementById('new-tracker-name').value.trim();
+            if (!email || !name) return alert('Select user and enter a tracker name.');
+            const id = `tr_${Date.now()}`;
+            set(ref(db, `trackers/${id}`), { id, email, name, createdAt: Date.now(), rows: [{id: Date.now(), date: new Date().toISOString().split('T')[0], client:'', taskName:'', desc:'', status:'In Progress'}] })
+                .then(() => { closeModals(); openActiveTracker(id); });
+        };
+
+        window.openActiveTracker = (id) => {
+            activeTrackerId = id;
+            const tr = trackers.find(x => x.id === id);
+            if (!tr) return;
+            const uName = team.find(x => x.email === tr.email)?.name || 'Unknown';
+            document.getElementById('tr-header-name').innerText = tr.name;
+            document.getElementById('tr-header-meta').innerText = `${uName} (${tr.email})`;
+            document.getElementById('tr-header-initial').innerText = uName.charAt(0);
+            activeTrackerRows = tr.rows || [];
+            renderActiveTrackerRows();
+            document.getElementById('active-tracker-view').classList.remove('hidden');
+        };
+
+        window.closeActiveTracker  = () => { activeTrackerId = null; document.getElementById('active-tracker-view').classList.add('hidden'); };
+        window.addTrackerRow       = () => { activeTrackerRows.push({id:Date.now(), date:new Date().toISOString().split('T')[0], client:'', taskName:'', desc:'', status:'In Progress'}); renderActiveTrackerRows(); };
+        window.removeTrackerRow    = (rowId) => { activeTrackerRows = activeTrackerRows.filter(r => r.id !== rowId); renderActiveTrackerRows(); };
+        window.updateTrackerRow    = (rowId, field, value) => { const r = activeTrackerRows.find(x => x.id === rowId); if (r) r[field] = value; };
+
+        function renderActiveTrackerRows() {
+            document.getElementById('tracker-rows').innerHTML = activeTrackerRows.map(r => {
+                let dayStr = '--';
+                if (r.date) { const d = new Date(r.date); dayStr = new Date(d.getTime() + d.getTimezoneOffset()*60000).toLocaleDateString(undefined, {weekday:'short'}); }
+                const sCls = r.status==='Done' ? 'text-emerald-600 bg-emerald-50 border-emerald-100' : r.status==='In Progress' ? 'text-blue-600 bg-blue-50 border-blue-100' : r.status==='Pending Client' ? 'text-amber-600 bg-amber-50 border-amber-100' : 'text-red-600 bg-red-50 border-red-100';
+                return `
+                <tr class="hover:bg-white transition-colors group">
+                    <td class="p-2 w-40"><input type="date" value="${r.date}" onchange="updateTrackerRow(${r.id},'date',this.value);renderActiveTrackerRows();" class="w-full bg-transparent p-2 text-xs font-bold text-slate-600 outline-none focus:bg-white focus:ring-2 focus:ring-brand/20 rounded-lg transition-all border border-transparent hover:border-slate-200 focus:border-brand"></td>
+                    <td class="p-2 w-20 text-[11px] font-black text-slate-400 uppercase text-center">${dayStr}</td>
+                    <td class="p-2 w-56"><input type="text" value="${r.client}" placeholder="Client Name" onchange="updateTrackerRow(${r.id},'client',this.value)" class="w-full bg-transparent p-2 text-xs font-bold text-slate-800 outline-none focus:bg-white focus:ring-2 focus:ring-brand/20 rounded-lg transition-all border border-transparent hover:border-slate-200 focus:border-brand"></td>
+                    <td class="p-2 w-64"><input type="text" value="${r.taskName}" placeholder="Task Name" onchange="updateTrackerRow(${r.id},'taskName',this.value)" class="w-full bg-transparent p-2 text-xs font-bold text-slate-800 outline-none focus:bg-white focus:ring-2 focus:ring-brand/20 rounded-lg transition-all border border-transparent hover:border-slate-200 focus:border-brand"></td>
+                    <td class="p-2 min-w-[300px]"><input type="text" value="${r.desc}" placeholder="Task details..." onchange="updateTrackerRow(${r.id},'desc',this.value)" class="w-full bg-transparent p-2 text-xs font-medium text-slate-600 outline-none focus:bg-white focus:ring-2 focus:ring-brand/20 rounded-lg transition-all border border-transparent hover:border-slate-200 focus:border-brand"></td>
+                    <td class="p-2 w-48">
+                        <select onchange="updateTrackerRow(${r.id},'status',this.value);renderActiveTrackerRows();" class="w-full p-2.5 text-[10px] font-bold uppercase tracking-widest outline-none rounded-lg cursor-pointer transition-all border shadow-sm ${sCls}">
+                            <option value="In Progress" ${r.status==='In Progress'?'selected':''}>⏳ In Progress</option>
+                            <option value="Done" ${r.status==='Done'?'selected':''}>✅ Done</option>
+                            <option value="Pending Client" ${r.status==='Pending Client'?'selected':''}>⏸️ Pending Client</option>
+                            <option value="Incomplete" ${r.status==='Incomplete'?'selected':''}>❌ Incomplete</option>
+                        </select>
+                    </td>
+                    <td class="p-2 text-center w-16"><button onclick="removeTrackerRow(${r.id})" class="text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity bg-white p-2 rounded-lg shadow-sm border border-slate-200 hover:border-red-200"><i class="fas fa-trash-alt"></i></button></td>
+                </tr>`;
+            }).join('');
+        }
+
+        window.saveActiveTracker = () => {
+            if (!activeTrackerId) return;
+            update(ref(db, `trackers/${activeTrackerId}`), { rows: activeTrackerRows }).then(() => alert('Tracker Saved!'));
+        };
+
+        function renderTrackersList() {
+            const container = document.getElementById('trackers-list');
+            if (trackers.length === 0) { container.innerHTML = `<div class="col-span-full py-16 text-center text-slate-400 text-xs font-bold uppercase tracking-widest bg-white rounded-3xl border border-dashed border-slate-200">No trackers yet.</div>`; return; }
+            container.innerHTML = trackers.sort((a,b) => b.createdAt - a.createdAt).map(tr => {
+                const uName   = team.find(x => x.email === tr.email)?.name || tr.email;
+                const dateStr = new Date(tr.createdAt).toLocaleDateString(undefined, {month:'short', day:'numeric', year:'numeric'});
+                return `
+                <div onclick="openActiveTracker('${tr.id}')" class="glass-panel p-6 cursor-pointer hover:border-brand transition-all hover:-translate-y-2 hover:shadow-xl bg-white relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-16 h-16 bg-brand-light rounded-bl-[3rem] -mr-8 -mt-8 transition-transform group-hover:scale-110"></div>
+                    <div class="flex items-center gap-4 mb-4 relative z-10">
+                        <div class="w-12 h-12 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center font-black text-xl shadow-sm">${uName.charAt(0)}</div>
+                        <div><h4 class="font-black text-base text-slate-800 heading-font">${uName}</h4><p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Created: ${dateStr}</p></div>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-100"><p class="text-xs font-bold text-slate-700 truncate"><i class="fas fa-file-excel text-brand mr-2"></i> ${tr.name}</p></div>
+                </div>`;
+            }).join('');
+        }
+
+        init();
+    </script>
+</body>
+</html>
