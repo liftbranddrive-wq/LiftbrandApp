@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Liftbrand ERP | Sovereign Blueprint</title>
+    <title>Liftbrand ERP | ClickUp Professional</title>
 
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#1e293b">
@@ -15,109 +15,106 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
-    <!-- Quill.js for Rich Text (ClickUp Style) -->
+    <!-- Quill.js (ClickUp Style Blocks) -->
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
         
-        :root { --brand: #7b2cbf; --brand-hover: #5a189a; --brand-light: #f3e8ff; --sidebar: #0f172a; --sidebar-hover: #1e293b; --bg: #ffffff; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: #334155; font-size: 14px; overflow: hidden; }
+        :root { --brand: #af4e30; --brand-hover: #8f3e25; --brand-light: #f5e4df; --sidebar: #0f172a; --sidebar-hover: #1e293b; --bg: #ffffff; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: #334155; font-size: 13px; overflow: hidden; }
         h1, h2, h3, h4, .heading-font { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.02em; color: #0f172a; }
         
         .text-brand { color: var(--brand); } .bg-brand { background-color: var(--brand); color: white; }
         select, input, textarea { appearance: none; outline: none; }
         .hide-scrollbar::-webkit-scrollbar { display: none; } .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* Sidebar Responsive Logic */
-        #sidebar { position: fixed; height: 100vh; z-index: 50; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); transform: translateX(-100%); }
-        @media (min-width: 768px) { #sidebar { position: relative; transform: translateX(0); } #mobile-overlay { display: none !important; } }
+        /* Layout */
+        #sidebar { position: fixed; height: 100vh; z-index: 50; transition: transform 0.3s ease; transform: translateX(-100%); }
+        @media (min-width: 768px) { #sidebar { position: relative; transform: translateX(0); } }
         #sidebar.open { transform: translateX(0); }
 
-        .sidebar-item { display: flex; items-center; gap: 0.75rem; padding: 0.75rem 1rem; border-radius: 0.5rem; color: #94a3b8; font-weight: 600; cursor: pointer; transition: all 0.2s; font-size: 13px; }
+        .sidebar-item { display: flex; items-center; gap: 0.75rem; padding: 0.6rem 1rem; border-radius: 0.5rem; color: #94a3b8; font-weight: 600; cursor: pointer; transition: all 0.2s; font-size: 13px; }
         .sidebar-item:hover { background-color: var(--sidebar-hover); color: #f8fafc; }
         .sidebar-item.active { background-color: var(--brand); color: white; }
         .sidebar-section-title { font-size: 10px; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 0.05em; padding: 1.5rem 1rem 0.5rem; }
-        
-        /* Task Cards */
+
+        /* Task Components */
         .task-card { transition: all 0.2s; border-left: 4px solid transparent; }
-        .prio-urgent { border-left-color: #ef4444; } .prio-high { border-left-color: #f97316; }
-        .prio-normal { border-left-color: #3b82f6; } .prio-low { border-left-color: #94a3b8; }
+        .prio-urgent { border-left-color: #ef4444; background: #fff1f1; }
+        .prio-high { border-left-color: #f97316; background: #fff7ed; }
+        .prio-normal { border-left-color: #3b82f6; background: #f0f9ff; }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        /* Chat UI */
+        .chat-bubble-me { background: var(--brand); color: white; border-radius: 15px 15px 2px 15px; align-self: flex-end; }
+        .chat-bubble-them { background: #f1f5f9; color: #1e293b; border-radius: 15px 15px 15px 2px; align-self: flex-start; }
+
+        /* Editor */
+        .ql-container.ql-snow { border: none !important; font-family: 'Inter'; font-size: 14px; }
+        .ql-toolbar.ql-snow { border: none !important; border-bottom: 1px solid #f1f5f9 !important; background: #fcfaf8; }
+        .ql-editor { min-height: 200px; padding: 1.5rem !important; }
+
+        /* Custom scroll */
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        
-        .view-tab { border-bottom: 2px solid transparent; padding-bottom: 0.5rem; color: #64748b; font-weight: 700; cursor: pointer; font-size: 13px; }
-        .view-tab.active { border-bottom-color: var(--brand); color: var(--brand); }
 
-        /* Safe Area Support */
-        .safe-top { padding-top: env(safe-area-inset-top); }
-        .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
-
-        /* Full Screen Modals for Mobile */
-        @media (max-width: 767px) {
-            .modal-content { height: 100vh !important; width: 100% !important; max-width: 100% !important; border-radius: 0 !important; margin: 0 !important; }
-            .ql-editor { min-height: 200px; }
-        }
+        /* Mobile safe areas */
+        .safe-padding { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); }
     </style>
 </head>
-<body class="flex h-screen w-screen overflow-hidden bg-white safe-top safe-bottom">
+<body class="flex h-screen w-screen overflow-hidden bg-white safe-padding">
 
-    <!-- MOBILE OVERLAY -->
-    <div id="mobile-overlay" class="fixed inset-0 bg-black/50 z-40 hidden" onclick="toggleSidebar(false)"></div>
+    <div id="mobile-overlay" class="fixed inset-0 bg-black/60 z-40 hidden" onclick="toggleSidebar(false)"></div>
 
-    <!-- LOGIN SCREEN -->
-    <div id="view-login" class="fixed inset-0 bg-[#0f172a] z-[100] flex flex-col items-center justify-center p-6">
-        <div class="bg-white p-8 md:p-10 max-w-sm w-full text-center rounded-2xl shadow-2xl relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-full h-1.5 bg-brand"></div>
-            <img src="https://assets.cdn.filesafe.space/kStDsoJsyMuEVTowimeB/media/695e8653f4549a075dee967f.png" alt="Liftbrand" class="h-16 mx-auto mb-6 object-contain">
-            <h2 class="text-2xl font-bold text-slate-900 mb-2">Liftbrand ERP</h2>
-            <p class="text-sm text-slate-500 mb-8">Access Secure Agency Portal</p>
+    <!-- LOGIN -->
+    <div id="view-login" class="fixed inset-0 bg-[#0f172a] z-[100] flex flex-col items-center justify-center p-6 text-center">
+        <div class="bg-white p-10 max-w-sm w-full rounded-3xl shadow-2xl relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-2 bg-brand"></div>
+            <img src="https://assets.cdn.filesafe.space/kStDsoJsyMuEVTowimeB/media/695e8653f4549a075dee967f.png" alt="Liftbrand" class="h-20 mx-auto mb-6 object-contain">
+            <h2 class="text-2xl font-bold text-slate-900 mb-2">Agency ERP</h2>
+            <p class="text-sm text-slate-400 mb-8 font-medium">Sovereign OS v4.0</p>
             
-            <button id="btn-login-google" onclick="loginWithGoogle()" class="w-full bg-slate-900 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-3 active:scale-95 transition-all">
+            <button id="btn-login-google" onclick="loginWithGoogle()" class="w-full bg-slate-900 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-3 active:scale-95 transition-all shadow-lg shadow-slate-200">
                 <i class="fab fa-google"></i> Login with Google
             </button>
-            <div id="login-spinner" class="hidden mt-4 text-sm font-bold text-brand animate-pulse">Establishing Connection...</div>
+            <div id="login-spinner" class="hidden mt-4 text-sm font-bold text-brand animate-pulse"><i class="fas fa-circle-notch fa-spin mr-2"></i> Syncing Encryption...</div>
             <div id="login-error" class="hidden mt-4 text-xs font-bold text-red-500 bg-red-50 p-3 rounded-lg border border-red-100"></div>
         </div>
     </div>
 
-    <!-- MAIN APP LAYOUT -->
+    <!-- MAIN WRAPPER -->
     <div id="app-wrapper" class="hidden flex h-full w-full">
         
-        <!-- SIDEBAR (Fixed/Drawer) -->
+        <!-- SIDEBAR (CLICKUP STYLE) -->
         <div id="sidebar" class="w-72 bg-[var(--sidebar)] text-slate-300 flex flex-col flex-shrink-0 shadow-2xl overflow-y-auto hide-scrollbar">
             <div class="p-6 flex items-center justify-between border-b border-slate-800">
                 <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 bg-brand rounded-lg flex items-center justify-center text-white font-black text-xs">LB</div>
-                    <span class="text-sm font-bold text-white">Liftbrand</span>
+                    <div class="w-8 h-8 bg-brand rounded-lg flex items-center justify-center text-white font-black text-xs shadow-lg shadow-brand/20">LB</div>
+                    <span class="text-sm font-bold text-white tracking-tight">Liftbrand OS</span>
                 </div>
                 <button class="md:hidden text-slate-500" onclick="toggleSidebar(false)"><i class="fas fa-times"></i></button>
             </div>
 
             <div class="flex-1 px-3 py-4 space-y-1">
                 <div onclick="switchMainView('home')" id="nav-home" class="sidebar-item active"><i class="fas fa-home w-5"></i> Home</div>
-                <div onclick="switchMainView('notifications')" id="nav-notif" class="sidebar-item"><i class="fas fa-bell w-5"></i> Inbox</div>
-                <div onclick="switchMainView('docs')" id="nav-docs" class="sidebar-item"><i class="fas fa-file-alt w-5"></i> Docs</div>
+                <div onclick="switchMainView('chat')" id="nav-chat" class="sidebar-item"><i class="fas fa-comments w-5"></i> Team Chat</div>
+                <div onclick="switchMainView('docs')" id="nav-docs" class="sidebar-item"><i class="fas fa-file-alt w-5"></i> Documents</div>
                 
-                <div class="sidebar-section-title">Operations</div>
-                <div id="spaces-list-sidebar" class="space-y-1">
-                    <!-- Spaces injected -->
-                </div>
+                <div class="sidebar-section-title">Client Portfolio</div>
+                <div id="spaces-list-sidebar" class="space-y-1"></div>
 
-                <button onclick="showCreateSpaceModal()" class="sidebar-item !text-slate-500 hover:!text-white mt-4 w-full">
-                    <i class="fas fa-plus-circle w-5"></i> New Space
-                </button>
+                <div class="sidebar-section-title">Management</div>
+                <div onclick="switchMainView('client-onboarding')" class="sidebar-item text-brand"><i class="fas fa-plus-circle w-5"></i> Onboard New</div>
+                <div onclick="switchMainView('team')" class="sidebar-item"><i class="fas fa-users w-5"></i> Team Directory</div>
             </div>
 
-            <div class="p-4 border-t border-slate-800 bg-slate-900/50" onclick="handleSignOut()">
-                <div class="flex items-center gap-3 p-2 cursor-pointer hover:bg-slate-800 rounded-lg transition">
-                    <div id="user-pill-avatar" class="w-8 h-8 bg-brand text-white rounded flex items-center justify-center text-xs font-bold">U</div>
+            <div class="p-4 border-t border-slate-800 bg-slate-900/40" onclick="handleSignOut()">
+                <div class="flex items-center gap-3 p-2 cursor-pointer hover:bg-slate-800 rounded-xl transition">
+                    <div id="user-pill-avatar" class="w-9 h-9 bg-brand text-white rounded-lg flex items-center justify-center font-bold shadow-md shadow-brand/20">U</div>
                     <div class="min-w-0 flex-1">
-                        <p id="user-pill-name" class="text-xs font-bold text-white truncate">User Name</p>
-                        <p class="text-[10px] text-slate-500 font-bold uppercase">Admin</p>
+                        <p id="user-pill-name" class="text-xs font-bold text-white truncate">User</p>
+                        <p id="user-pill-role" class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Admin</p>
                     </div>
                 </div>
             </div>
@@ -126,112 +123,162 @@
         <!-- MAIN CONTENT AREA -->
         <div class="flex-1 flex flex-col h-full bg-[#f8fafc] overflow-hidden">
             
-            <!-- HEADER / TOPBAR -->
+            <!-- HEADER -->
             <div class="h-14 md:h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 md:px-6 z-20 flex-shrink-0">
                 <div class="flex items-center gap-3 md:gap-6">
-                    <button class="md:hidden w-10 h-10 flex items-center justify-center text-slate-500 text-lg" onclick="toggleSidebar(true)"><i class="fas fa-bars"></i></button>
-                    <h2 class="text-sm md:text-base font-bold text-slate-800 truncate max-w-[150px] md:max-w-none" id="topbar-title">Home</h2>
+                    <button class="md:hidden w-10 h-10 flex items-center justify-center text-slate-500" onclick="toggleSidebar(true)"><i class="fas fa-bars"></i></button>
+                    <h2 class="text-sm md:text-lg font-bold text-slate-800 flex items-center gap-2" id="topbar-title">Home</h2>
                 </div>
                 <div class="flex items-center gap-2">
-                    <div id="topbar-view-tabs" class="hidden md:flex items-center gap-6 mr-6">
-                        <div class="view-tab active" onclick="switchTaskView('list')" id="tab-list">List</div>
-                        <div class="view-tab" onclick="switchTaskView('board')" id="tab-board">Board</div>
-                    </div>
-                    <button onclick="showTaskModal()" id="btn-topbar-new-task" class="hidden bg-brand text-white px-3 md:px-4 py-1.5 rounded-lg font-bold text-xs shadow-sm"><i class="fas fa-plus mr-1"></i> Task</button>
+                    <button onclick="showTaskModal()" id="btn-topbar-new-task" class="hidden bg-brand text-white px-4 py-2 rounded-xl font-bold text-xs shadow-md hover:bg-brand-hover transition">
+                        <i class="fas fa-plus mr-1"></i> New Task
+                    </button>
                 </div>
             </div>
 
             <!-- VIEW CONTAINER -->
-            <div class="flex-1 overflow-y-auto relative p-4 md:p-6">
+            <div class="flex-1 overflow-y-auto relative p-4 md:p-8 hide-scrollbar">
                 
-                <!-- MOBILE HOME VIEW -->
-                <div id="view-home" class="max-w-5xl mx-auto space-y-6">
-                    <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
-                        <div>
-                            <h1 class="text-2xl md:text-3xl font-bold text-slate-900" id="home-greeting">Hello.</h1>
-                            <p class="text-sm text-slate-500 font-medium">Agency status overview.</p>
+                <!-- VIEW: HOME (The Brain) -->
+                <div id="view-home" class="max-w-6xl mx-auto space-y-8">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm relative overflow-hidden">
+                        <div class="absolute right-0 top-0 w-32 h-32 bg-brand/5 rounded-bl-full"></div>
+                        <div class="z-10">
+                            <h1 class="text-3xl font-bold text-slate-900 heading-font mb-1" id="home-greeting">Good evening.</h1>
+                            <p class="text-slate-500 font-medium">System operational. 0 pending alerts.</p>
                         </div>
-                        <button onclick="switchMainView('client-onboarding')" class="w-full md:w-auto bg-slate-900 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-md active:scale-95 transition">
-                            <i class="fas fa-user-plus mr-2"></i> Onboard Client
-                        </button>
+                        <div class="flex gap-3 z-10 w-full md:w-auto">
+                            <button onclick="switchMainView('client-onboarding')" class="flex-1 md:flex-none bg-slate-900 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-xl active:scale-95 transition">Onboard Client</button>
+                            <button onclick="showTaskModal()" class="flex-1 md:flex-none bg-white border border-slate-200 text-slate-800 px-6 py-3 rounded-xl font-bold text-sm shadow-sm active:scale-95 transition">Quick Task</button>
+                        </div>
                     </div>
 
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <!-- My Work -->
-                        <div class="lg:col-span-2 space-y-4">
-                            <div class="bg-white rounded-xl border border-slate-200 shadow-sm">
-                                <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-                                    <h3 class="font-bold text-sm text-slate-800">My Tasks</h3>
-                                    <span class="bg-brand text-white text-[10px] px-2 py-0.5 rounded-full font-black" id="home-tasks-count">0</span>
-                                </div>
-                                <div id="home-my-tasks-list" class="divide-y divide-slate-50">
-                                    <!-- Tasks list -->
-                                </div>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <div class="lg:col-span-2 space-y-6">
+                            <div class="flex justify-between items-center px-2">
+                                <h3 class="font-bold text-slate-900 text-lg">My Active Tasks</h3>
+                                <span class="bg-brand text-white text-[10px] px-2 py-0.5 rounded-full font-black shadow-sm" id="home-tasks-count">0</span>
                             </div>
+                            <div id="home-my-tasks-list" class="grid gap-3"></div>
                         </div>
-
-                        <!-- Action Center -->
-                        <div class="space-y-4">
-                            <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-                                <div class="p-4 border-b border-slate-100 bg-slate-900 text-white">
-                                    <h3 class="font-bold text-xs uppercase tracking-widest"><i class="fas fa-bolt text-amber-400 mr-2"></i> Action Center</h3>
-                                </div>
-                                <div id="home-alerts-container" class="divide-y divide-slate-50">
-                                    <!-- Alerts list -->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- VIEW: TASKS -->
-                <div id="view-tasks" class="hidden h-full flex flex-col">
-                    <!-- Mobile view toggle for task list vs board -->
-                    <div class="md:hidden flex bg-slate-100 p-1 rounded-lg mb-4">
-                        <button onclick="switchTaskView('list')" id="m-tab-list" class="flex-1 py-1.5 text-xs font-bold rounded-md bg-white text-brand shadow-sm">List</button>
-                        <button onclick="switchTaskView('board')" id="m-tab-board" class="flex-1 py-1.5 text-xs font-bold text-slate-500">Board</button>
-                    </div>
-
-                    <div id="tasks-list-layout" class="flex-1 bg-white border border-slate-200 rounded-xl overflow-hidden flex flex-col">
-                        <div id="tasks-list-container" class="flex-1 overflow-y-auto divide-y divide-slate-100">
-                            <!-- Injected Tasks -->
-                        </div>
-                    </div>
-
-                    <div id="tasks-board-layout" class="hidden flex-1 overflow-x-auto flex gap-4 pb-6">
-                        <!-- Board Columns -->
-                    </div>
-                </div>
-
-                <!-- VIEW: DOCS -->
-                <div id="view-docs" class="hidden max-w-6xl mx-auto space-y-6">
-                    <div class="flex justify-between items-center">
-                        <h3 class="text-xl font-bold text-slate-800">Documents</h3>
-                        <button onclick="showDocModal()" class="bg-slate-900 text-white px-4 py-2 rounded-lg font-bold text-xs"><i class="fas fa-plus"></i></button>
-                    </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="docs-grid"></div>
-                </div>
-
-                <!-- VIEW: ONBOARDING -->
-                <div id="view-client-onboarding" class="hidden max-w-2xl mx-auto">
-                    <div class="bg-white p-6 md:p-10 rounded-2xl border border-slate-200 shadow-xl space-y-6">
-                        <h2 class="text-2xl font-bold text-slate-900">Initialize Client</h2>
-                        <input type="text" id="new-client-name" placeholder="Client Name" class="w-full p-4 bg-slate-50 border rounded-xl font-bold">
-                        <input type="date" id="new-client-signup" class="w-full p-4 bg-slate-50 border rounded-xl font-bold text-brand">
                         
-                        <div class="space-y-3">
-                            <label class="block p-4 border-2 border-brand bg-brand-light/30 rounded-xl cursor-pointer">
-                                <input type="radio" name="tier_selection" value="foundation" class="hidden" checked>
-                                <h4 class="font-bold">Foundation ($299)</h4>
-                                <p class="text-xs text-slate-500">Essential setup.</p>
-                            </label>
-                            <label class="block p-4 border-2 border-slate-200 rounded-xl cursor-pointer">
-                                <input type="radio" name="tier_selection" value="growth" class="hidden">
-                                <h4 class="font-bold">Growth ($450)</h4>
-                                <p class="text-xs text-slate-500">Advanced scaling.</p>
-                            </label>
+                        <div class="space-y-6">
+                            <h3 class="font-bold text-slate-900 text-lg px-2">Agency Action Center</h3>
+                            <div id="home-alerts-container" class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden divide-y divide-slate-50">
+                                <!-- Alerts injected -->
+                            </div>
                         </div>
-                        <button onclick="commitNewClient()" class="w-full py-4 bg-slate-900 text-white rounded-xl font-bold active:bg-brand">Create Client Workspace</button>
+                    </div>
+                </div>
+
+                <!-- VIEW: CHAT (WhatsApp Clone) -->
+                <div id="view-chat" class="hidden h-full flex flex-col md:flex-row bg-white rounded-3xl border border-slate-200 shadow-xl overflow-hidden">
+                    <div class="w-full md:w-80 border-r border-slate-200 bg-slate-50 flex flex-col">
+                        <div class="p-6 border-b bg-white flex justify-between items-center">
+                            <h3 class="text-xl font-black heading-font text-slate-900">Messages</h3>
+                            <button onclick="showCreateGroupModal()" class="w-10 h-10 bg-slate-100 text-brand rounded-xl flex items-center justify-center hover:bg-brand-light transition"><i class="fas fa-plus"></i></button>
+                        </div>
+                        <div class="flex-1 overflow-y-auto p-3 space-y-1" id="chat-sidebar-list"></div>
+                    </div>
+                    <div class="flex-1 flex flex-col relative bg-[#fcfaf8]">
+                        <div id="chat-empty" class="flex-1 flex flex-col items-center justify-center text-slate-300 p-10 text-center">
+                            <div class="w-20 h-20 bg-slate-100 rounded-3xl flex items-center justify-center text-3xl mb-4"><i class="fas fa-comments"></i></div>
+                            <h4 class="text-slate-600 font-bold text-lg mb-1">Your Team is Waiting</h4>
+                            <p class="text-sm text-slate-400 max-w-xs">Select a contact to start secure encrypted agency chat.</p>
+                        </div>
+                        <div id="chat-window" class="hidden flex-1 flex flex-col h-full">
+                            <div class="p-4 border-b bg-white flex items-center gap-4 shadow-sm">
+                                <div id="chat-header-avatar" class="w-10 h-10 bg-brand text-white rounded-xl flex items-center justify-center font-bold">U</div>
+                                <div class="flex-1 min-w-0">
+                                    <h4 class="font-bold text-slate-900 truncate" id="chat-header-name">Team Member</h4>
+                                    <p class="text-[10px] text-emerald-500 font-bold uppercase tracking-widest">Active Now</p>
+                                </div>
+                            </div>
+                            <div id="chat-messages" class="flex-1 overflow-y-auto p-6 space-y-4 flex flex-col hide-scrollbar"></div>
+                            <div class="p-4 bg-white border-t border-slate-100 flex items-end gap-3">
+                                <textarea id="chat-input" placeholder="Type a message..." rows="1" class="flex-1 p-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm outline-none focus:border-brand transition-all resize-none"></textarea>
+                                <button onclick="sendChatMessage()" class="bg-brand text-white w-14 h-14 rounded-2xl flex items-center justify-center shadow-xl shadow-brand/20 active:scale-95 transition-transform"><i class="fas fa-paper-plane text-xl"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW: CLIENT DASHBOARD (ClickUp Card style) -->
+                <div id="view-client-dashboard" class="hidden space-y-6 max-w-6xl mx-auto">
+                    <div class="flex justify-between items-center mb-4">
+                        <button onclick="switchMainView('home')" class="text-slate-500 font-bold hover:text-slate-900 bg-white px-4 py-2 rounded-xl shadow-sm border border-slate-200"><i class="fas fa-arrow-left mr-2"></i> All Projects</button>
+                    </div>
+                    
+                    <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-40 h-40 bg-slate-50 rounded-bl-[100px] -z-0"></div>
+                        <div class="flex items-center gap-6 z-10">
+                            <div class="w-20 h-20 bg-slate-900 text-white rounded-2xl flex items-center justify-center text-3xl font-black shadow-2xl" id="cd-initial">C</div>
+                            <div>
+                                <h1 class="text-3xl font-bold heading-font text-slate-900 mb-1" id="cd-name">Client Name</h1>
+                                <div class="flex flex-wrap items-center gap-3">
+                                    <span class="px-3 py-1 bg-brand-light text-brand font-black text-[10px] uppercase tracking-widest rounded-lg border border-brand/20" id="cd-tier">Growth</span>
+                                    <span class="text-xs font-bold text-slate-400" id="cd-date"><i class="fas fa-calendar-alt mr-1"></i> --</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="z-10 bg-white border border-slate-100 p-4 rounded-2xl shadow-inner min-w-[220px]">
+                            <div class="flex justify-between text-[10px] font-black uppercase text-slate-400 mb-2"><span>Onboarding Status</span> <span id="cd-pct">0%</span></div>
+                            <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden"><div id="cd-progress-bar" class="bg-brand h-full transition-all duration-1000 ease-out" style="width: 0%"></div></div>
+                        </div>
+                    </div>
+
+                    <!-- Tabs -->
+                    <div class="flex border-b border-slate-200 gap-8 overflow-x-auto hide-scrollbar">
+                        <button onclick="switchClientTab('roadmap')" id="ctab-roadmap" class="active pb-4 font-bold text-slate-500 border-b-2 border-transparent transition-all">Project Roadmap</button>
+                        <button onclick="switchClientTab('notes')" id="ctab-notes" class="pb-4 font-bold text-slate-500 border-b-2 border-transparent transition-all">Internal Notes</button>
+                        <button onclick="switchClientTab('assets')" id="ctab-assets" class="pb-4 font-bold text-slate-500 border-b-2 border-transparent transition-all">Assets & Links</button>
+                    </div>
+
+                    <div id="client-tab-content" class="py-6"></div>
+                </div>
+
+                <!-- VIEW: ONBOARDING (Wizard style) -->
+                <div id="view-client-onboarding" class="hidden max-w-4xl mx-auto space-y-6">
+                    <div class="bg-white p-8 md:p-12 rounded-3xl border border-slate-200 shadow-2xl relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-full h-2 bg-brand"></div>
+                        <h2 class="text-3xl font-bold heading-font text-slate-900 mb-2">Sovereign Onboarding</h2>
+                        <p class="text-slate-400 font-medium mb-10">Initialize a client workspace with pre-built roadmap logic.</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">Client / Business Name</label>
+                                <input type="text" id="new-client-name" placeholder="e.g. Apex Dental" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold text-slate-800 focus:border-brand transition-all">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">Onboarding Kick-off Date</label>
+                                <input type="date" id="new-client-signup" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold text-brand focus:border-brand transition-all">
+                            </div>
+                        </div>
+
+                        <div class="mb-10">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-4 tracking-widest">Select Core Package</label>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <label class="p-6 border-2 border-slate-100 rounded-3xl cursor-pointer hover:border-brand transition-all relative group" onclick="selectBlueprint('foundation')">
+                                    <input type="radio" name="blueprint" value="foundation" class="hidden" checked>
+                                    <h4 class="text-xl font-bold text-slate-800">Foundation OS</h4>
+                                    <p class="text-xs text-slate-400 mt-2">Essential SEO, Website, and Ads infrastructure.</p>
+                                    <div class="absolute top-6 right-6 w-6 h-6 rounded-full border-2 border-slate-200 flex items-center justify-center bg-white"><div class="radio-dot w-3 h-3 bg-brand rounded-full scale-0 transition-transform"></div></div>
+                                </label>
+                                <label class="p-6 border-2 border-slate-100 rounded-3xl cursor-pointer hover:border-brand transition-all relative group" onclick="selectBlueprint('growth')">
+                                    <input type="radio" name="blueprint" value="growth" class="hidden">
+                                    <h4 class="text-xl font-bold text-slate-800">Growth OS</h4>
+                                    <p class="text-xs text-slate-400 mt-2">Advanced SEO, AI Voice, and Scaled Media.</p>
+                                    <div class="absolute top-6 right-6 w-6 h-6 rounded-full border-2 border-slate-200 flex items-center justify-center bg-white"><div class="radio-dot w-3 h-3 bg-brand rounded-full scale-0 transition-transform"></div></div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mb-10 bg-slate-50 p-6 rounded-3xl border border-slate-200">
+                            <p class="text-[10px] font-black text-slate-500 uppercase mb-4 tracking-widest">Service Line Items (Edit as needed)</p>
+                            <div id="blueprint-services-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+                        </div>
+                        
+                        <button onclick="commitNewClient()" class="w-full py-5 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-brand shadow-2xl transition-all active:scale-95">Generate Project & Notify Team</button>
                     </div>
                 </div>
 
@@ -239,74 +286,60 @@
         </div>
     </div>
 
-    <!-- MODAL OVERLAY -->
-    <div id="modal-overlay" class="fixed inset-0 bg-slate-900/70 hidden flex justify-center z-50 backdrop-blur-sm overflow-y-auto">
-        
-        <!-- TASK MODAL (Fullscreen Mobile) -->
-        <div id="modal-task" class="hidden modal-content bg-white shadow-2xl w-full max-w-5xl flex flex-col md:flex-row overflow-hidden my-auto md:h-[80vh] md:rounded-2xl">
-            <div class="flex-1 flex flex-col bg-white overflow-y-auto">
-                <div class="p-4 border-b border-slate-100 flex items-center justify-between sticky top-0 bg-white z-10">
+    <!-- MODALS -->
+    <div id="modal-overlay" class="fixed inset-0 bg-slate-900/80 hidden flex justify-center z-50 backdrop-blur-md overflow-y-auto p-4">
+        <!-- Task modal is now a full detailed view -->
+        <div id="modal-task" class="hidden modal-content bg-white shadow-2xl w-full max-w-6xl rounded-3xl overflow-hidden my-auto flex flex-col md:flex-row h-full md:h-[80vh]">
+            <div class="flex-1 flex flex-col bg-white overflow-y-auto hide-scrollbar">
+                <div class="p-6 border-b flex justify-between items-center sticky top-0 bg-white/90 backdrop-blur z-10">
                     <div class="flex items-center gap-3">
-                        <select id="task-status" class="px-3 py-1 bg-slate-100 rounded text-[10px] font-black uppercase outline-none"></select>
-                        <span class="text-xs text-slate-400 font-mono" id="task-id-display">#NEW</span>
+                        <select id="task-status" class="px-4 py-1.5 bg-brand-light text-brand rounded-lg text-[10px] font-black uppercase tracking-widest outline-none"></select>
                     </div>
-                    <button onclick="closeModals()" class="p-2 text-slate-400"><i class="fas fa-times text-lg"></i></button>
+                    <button onclick="closeModals()" class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400"><i class="fas fa-times"></i></button>
                 </div>
-                
-                <div class="p-6 md:p-8 space-y-6">
-                    <input type="text" id="task-title" placeholder="Task Name" class="w-full text-2xl font-bold text-slate-900 outline-none">
+                <div class="p-8 space-y-8">
+                    <input type="text" id="task-title" placeholder="Task Name" class="w-full text-4xl font-black heading-font text-slate-900 outline-none border-none placeholder:text-slate-200">
                     
-                    <div class="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl">
-                        <div>
-                            <label class="block text-[9px] font-bold text-slate-400 uppercase mb-1">Assignee</label>
-                            <select id="task-assignee" class="w-full bg-transparent text-sm font-bold text-slate-700"></select>
-                        </div>
-                        <div>
-                            <label class="block text-[9px] font-bold text-slate-400 uppercase mb-1">Due Date</label>
-                            <input type="date" id="task-due" class="w-full bg-transparent text-sm font-bold text-brand">
-                        </div>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 bg-[#fcfaf8] p-6 rounded-2xl border border-slate-100">
+                        <div><p class="text-[9px] font-black text-slate-400 uppercase mb-1">Assignee</p><select id="task-assignee" class="w-full bg-transparent font-bold text-slate-700"></select></div>
+                        <div><p class="text-[9px] font-black text-slate-400 uppercase mb-1">Due Date</p><input type="date" id="task-due" class="w-full bg-transparent font-bold text-brand"></div>
+                        <div><p class="text-[9px] font-black text-slate-400 uppercase mb-1">Priority</p><select id="task-priority" class="w-full bg-transparent font-bold text-slate-700"></select></div>
+                        <div><p class="text-[9px] font-black text-slate-400 uppercase mb-1">Points</p><input type="number" id="task-points" class="w-full bg-transparent font-bold" value="1"></div>
                     </div>
 
-                    <div id="quill-task-desc" class="bg-white rounded-xl border border-slate-200"></div>
+                    <div><p class="text-xs font-bold text-slate-500 mb-2">Description</p><div id="quill-task-desc"></div></div>
 
-                    <div class="space-y-3">
-                        <h4 class="font-bold text-sm">Subtasks</h4>
+                    <div class="space-y-4">
+                        <h4 class="font-bold text-slate-900 flex justify-between"><span>Subtasks</span> <span id="sub-progress" class="text-xs text-slate-400">0/0</span></h4>
                         <div id="subtasks-container" class="space-y-2"></div>
-                        <div class="flex gap-2">
-                            <input type="text" id="new-subtask-input" placeholder="Add subtask..." class="flex-1 p-3 bg-slate-50 border rounded-xl text-sm">
-                            <button onclick="addSubtask()" class="bg-slate-200 px-4 rounded-xl font-bold text-xs">Add</button>
-                        </div>
+                        <div class="flex gap-2"><input type="text" id="new-subtask" placeholder="Add a subtask..." class="flex-1 p-4 bg-slate-50 border rounded-2xl text-sm font-medium focus:border-brand"><button onclick="addSubtask()" class="bg-slate-900 text-white px-6 rounded-2xl font-bold">Add</button></div>
                     </div>
                 </div>
-
-                <div class="p-4 border-t border-slate-100 bg-white mt-auto sticky bottom-0">
-                    <button onclick="saveTask()" class="w-full bg-brand text-white py-4 rounded-xl font-bold shadow-lg">Save Changes</button>
-                    <button onclick="deleteTaskBtn()" id="btn-delete-task" class="w-full text-red-500 font-bold text-xs mt-4 hidden">Delete Task</button>
-                </div>
+                <div class="p-6 border-t mt-auto sticky bottom-0 bg-white"><button onclick="saveTask()" class="w-full py-4 bg-brand text-white rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl active:scale-95 transition-transform">Save & Notify Assignee</button></div>
+            </div>
+            <div class="w-full md:w-80 bg-slate-50 border-l p-6 flex flex-col">
+                <h4 class="font-bold text-slate-900 mb-6">Activity & Log</h4>
+                <div class="flex-1 overflow-y-auto space-y-4 text-xs text-slate-500" id="task-activity-log"></div>
             </div>
         </div>
 
         <!-- DOC MODAL -->
-        <div id="modal-doc" class="hidden modal-content bg-white shadow-2xl w-full max-w-4xl flex flex-col my-auto md:h-[90vh] md:rounded-2xl">
-            <div class="p-4 border-b flex justify-between items-center bg-white sticky top-0 z-10">
-                <span class="text-xs font-bold text-slate-400">DOC EDITOR</span>
+        <div id="modal-doc" class="hidden modal-content bg-white shadow-2xl w-full max-w-5xl rounded-3xl overflow-hidden my-auto h-[90vh] flex flex-col">
+            <div class="p-4 border-b flex justify-between items-center bg-slate-50/50">
+                <span class="text-xs font-black text-slate-400 uppercase tracking-widest">Workspace Document Editor</span>
                 <button onclick="closeModals()" class="p-2"><i class="fas fa-times text-lg"></i></button>
             </div>
-            <div class="flex-1 overflow-y-auto p-4 md:p-10">
-                <input type="text" id="doc-title-input" placeholder="Untitled" class="w-full text-3xl font-black text-slate-900 mb-6 border-none outline-none">
+            <div class="flex-1 overflow-y-auto p-10">
+                <input type="text" id="doc-title-input" placeholder="Title" class="w-full text-5xl font-black heading-font text-slate-900 mb-8 border-none outline-none">
                 <div id="quill-doc-editor"></div>
             </div>
-            <div class="p-4 border-t bg-slate-50 flex justify-end">
-                <button onclick="saveDocument()" class="bg-slate-900 text-white px-8 py-3 rounded-xl font-bold shadow-lg">Save Doc</button>
-            </div>
+            <div class="p-6 border-t bg-slate-50 flex justify-end"><button onclick="saveDocument()" class="bg-slate-900 text-white px-10 py-3 rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl">Save Document</button></div>
         </div>
-
     </div>
 
-    <!-- SCRIPTS -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getDatabase, ref, set, onValue, update, remove, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+        import { getDatabase, ref, set, onValue, update, remove, get, push } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
         import { getAuth, signInWithPopup, signInWithRedirect, getRedirectResult, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
         const firebaseConfig = {
@@ -321,82 +354,74 @@
 
         let app, db, auth;
         let clients = [], team = [], tasks = [], docs = [], spaces = [];
-        let currentUser = null; 
-        let activeView = 'home';
-        let activeSpaceId = null;
-        let activeTaskView = 'list';
+        let currentUser = null, activeChatId = null, activeClientId = null;
         let quillTask, quillDoc;
 
+        const BLUEPRINT = {
+            foundation: ['Custom Website', 'GBP Optimization', '2 Blog Articles', '8 Google Posts', 'SEO Audit', '1 Ad Campaign', 'AI Review Responder'],
+            growth: ['8 Geo-tagged Posts', 'Google Q&A', 'Schema Markup', 'Service Area Pages', 'Keyword Rank Reports', 'Unlimited Ad Campaigns', 'AI Voice Receptionist', 'Pixel Tracking Setup']
+        };
+
         async function init() {
-            try {
-                app = initializeApp(firebaseConfig);
-                db = getDatabase(app);
-                auth = getAuth(app);
+            app = initializeApp(firebaseConfig);
+            db = getDatabase(app);
+            auth = getAuth(app);
 
-                quillTask = new Quill('#quill-task-desc', { theme: 'snow', modules: { toolbar: [['bold', 'italic'], [{list:'ordered'}, {list:'bullet'}]] }});
-                quillDoc = new Quill('#quill-doc-editor', { theme: 'snow', modules: { toolbar: [[{header:[1,2,false]}], ['bold', 'italic'], [{list:'check'}, {list:'bullet'}], ['image', 'link']] }});
+            quillTask = new Quill('#quill-task-desc', { theme: 'snow', modules: { toolbar: [['bold', 'italic'], [{list:'ordered'}, {list:'bullet'}]] }});
+            quillDoc = new Quill('#quill-doc-editor', { theme: 'snow', modules: { toolbar: [[{header:[1,2,3,false]}], ['bold', 'italic', 'underline'], [{list:'check'}, {list:'bullet'}], ['image', 'link', 'code-block']] }});
 
-                getRedirectResult(auth).catch(err => {
-                    document.getElementById('login-error').innerText = err.message;
-                    document.getElementById('login-error').classList.remove('hidden');
-                });
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            const isStandalone = window.navigator.standalone;
 
-                onAuthStateChanged(auth, async (user) => {
-                    if (user) {
-                        const snapshot = await get(ref(db, 'team'));
-                        const members = Object.values(snapshot.val() || {});
-                        const isHardcodedAdmin = user.email === 'ishamughal2004@gmail.com' || user.email === 'ismaeelahmad100@gmail.com';
-                        const dbUser = members.find(m => m.email.toLowerCase() === user.email.toLowerCase());
+            getRedirectResult(auth).then(() => console.log("Login Sync OK")).catch(e => console.error(e));
 
-                        if (dbUser || isHardcodedAdmin) {
-                            currentUser = { uid: user.uid, email: user.email, name: dbUser ? dbUser.name : user.displayName || 'Admin', isAdmin: isHardcodedAdmin || dbUser?.isAdmin };
-                            document.getElementById('view-login').classList.add('hidden');
-                            document.getElementById('app-wrapper').classList.remove('hidden');
-                            document.getElementById('user-pill-name').innerText = currentUser.name;
-                            document.getElementById('user-pill-avatar').innerText = currentUser.name.charAt(0);
-                            document.getElementById('home-greeting').innerText = `Hello, ${currentUser.name.split(' ')[0]}.`;
-                            listenToData();
-                            switchMainView('home');
-                        } else {
-                            signOut(auth);
-                            document.getElementById('login-error').innerText = "Unauthorized email.";
-                            document.getElementById('login-error').classList.remove('hidden');
-                        }
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    const snap = await get(ref(db, 'team'));
+                    const members = Object.values(snap.val() || {});
+                    const isAdmin = user.email === 'ishamughal2004@gmail.com' || user.email === 'ismaeelahmad100@gmail.com';
+                    const dbUser = members.find(m => m.email.toLowerCase() === user.email.toLowerCase());
+
+                    if (dbUser || isAdmin) {
+                        currentUser = { uid: user.uid, email: user.email, name: dbUser ? dbUser.name : user.displayName, isAdmin: isAdmin || dbUser?.isAdmin };
+                        document.getElementById('view-login').classList.add('hidden');
+                        document.getElementById('app-wrapper').classList.remove('hidden');
+                        document.getElementById('user-pill-name').innerText = currentUser.name;
+                        document.getElementById('user-pill-avatar').innerText = currentUser.name.charAt(0);
+                        document.getElementById('user-pill-role').innerText = currentUser.isAdmin ? 'Admin' : 'Team Member';
+                        document.getElementById('home-greeting').innerText = `Good evening, ${currentUser.name.split(' ')[0]}.`;
+                        listenToData();
                     } else {
-                        document.getElementById('view-login').classList.remove('hidden');
-                        document.getElementById('app-wrapper').classList.add('hidden');
+                        signOut(auth);
+                        document.getElementById('login-error').innerText = "Access Denied. Ask admin to add your email.";
+                        document.getElementById('login-error').classList.remove('hidden');
                     }
-                });
-            } catch(e) { console.error(e); }
+                } else {
+                    document.getElementById('view-login').classList.remove('hidden');
+                    document.getElementById('app-wrapper').classList.add('hidden');
+                }
+            });
         }
 
         window.loginWithGoogle = () => {
             const provider = new GoogleAuthProvider();
             const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-            const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-            if (isIOS && isStandalone) {
-                document.getElementById('btn-login-google').classList.add('hidden');
-                document.getElementById('login-spinner').classList.remove('hidden');
-                signInWithRedirect(auth, provider);
-            } else {
-                signInWithPopup(auth, provider).catch(() => signInWithRedirect(auth, provider));
-            }
+            if (isIOS) signInWithRedirect(auth, provider);
+            else signInWithPopup(auth, provider).catch(() => signInWithRedirect(auth, provider));
         };
-
-        window.handleSignOut = () => { if(confirm('Logout?')) signOut(auth); };
 
         function listenToData() {
             onValue(ref(db, '/'), snapshot => {
                 const data = snapshot.val() || {};
-                clients = data.clients ? Object.values(data.clients) : [];
-                team = data.team ? Object.values(data.team) : [];
-                tasks = data.tasks ? Object.values(data.tasks) : [];
-                docs = data.docs ? Object.values(data.docs) : [];
-                spaces = data.spaces ? Object.values(data.spaces) : [];
+                clients = Object.values(data.clients || {});
+                team = Object.values(data.team || {});
+                tasks = Object.values(data.tasks || {});
+                docs = Object.values(data.docs || {});
+                spaces = Object.values(data.spaces || {});
                 renderSidebar();
-                updateHomeView();
-                if(activeView === 'tasks') renderTasks();
-                if(activeView === 'docs') renderDocsGrid();
+                renderChatSidebars();
+                updateHome();
+                renderDocsGrid();
             });
         }
 
@@ -407,161 +432,174 @@
             else { s.classList.remove('open'); o.classList.add('hidden'); }
         };
 
+        window.switchMainView = (view) => {
+            ['home', 'chat', 'docs', 'client-onboarding', 'client-dashboard'].forEach(v => document.getElementById(`view-${v}`).classList.add('hidden'));
+            document.getElementById(`view-${view}`).classList.remove('hidden');
+            document.getElementById('topbar-title').innerText = view.charAt(0).toUpperCase() + view.slice(1).replace('-', ' ');
+            document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+            const activeNav = document.getElementById(`nav-${view}`);
+            if(activeNav) activeNav.classList.add('active');
+            toggleSidebar(false);
+        };
+
         function renderSidebar() {
-            document.getElementById('spaces-list-sidebar').innerHTML = spaces.map(s => `
-                <div onclick="openSpace('${s.id}')" class="sidebar-item ${activeSpaceId === s.id ? 'active' : ''}">
-                    <i class="fas fa-folder w-5 text-amber-400"></i> ${s.name}
-                </div>
-            `).join('');
-            const tOpts = `<option value="">Unassigned</option>` + team.map(t => `<option value="${t.email}">${t.name}</option>`).join('');
-            document.getElementById('task-assignee').innerHTML = tOpts;
+            document.getElementById('spaces-list-sidebar').innerHTML = clients.map(c => `
+                <div onclick="openClientDashboard('${c.id}')" class="sidebar-item ${activeClientId === c.id ? 'active' : ''}">
+                    <i class="fas fa-folder w-5 text-amber-400"></i> ${c.name}
+                </div>`).join('');
+            const opts = `<option value="">Unassigned</option>` + team.map(t => `<option value="${t.email}">${t.name}</option>`).join('');
+            document.getElementById('task-assignee').innerHTML = opts;
         }
 
-        window.openSpace = (id) => {
-            activeSpaceId = id;
-            const s = spaces.find(x => x.id === id);
-            document.getElementById('topbar-title').innerText = s.name;
-            switchMainView('tasks');
-            toggleSidebar(false);
-        };
-
-        window.switchMainView = (view) => {
-            activeView = view;
-            ['home', 'tasks', 'docs', 'client-onboarding'].forEach(v => document.getElementById(`view-${v}`).classList.add('hidden'));
-            document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
-            document.getElementById('topbar-view-tabs').classList.add('hidden');
-            document.getElementById('btn-topbar-new-task').classList.add('hidden');
-            if(view === 'home') {
-                document.getElementById('view-home').classList.remove('hidden');
-                document.getElementById('nav-home').classList.add('active');
-                document.getElementById('topbar-title').innerText = 'Home';
-            } else if (view === 'tasks') {
-                document.getElementById('view-tasks').classList.remove('hidden');
-                document.getElementById('topbar-view-tabs').classList.remove('hidden');
-                document.getElementById('btn-topbar-new-task').classList.remove('hidden');
-                renderTasks();
-            } else if (view === 'docs') {
-                document.getElementById('view-docs').classList.remove('hidden');
-                document.getElementById('nav-docs').classList.add('active');
-                document.getElementById('topbar-title').innerText = 'Docs';
-                renderDocsGrid();
-            } else if (view === 'client-onboarding') {
-                document.getElementById('view-client-onboarding').classList.remove('hidden');
-                document.getElementById('topbar-title').innerText = 'New Client';
-            }
-            toggleSidebar(false);
-        };
-
-        function updateHomeView() {
+        function updateHome() {
             const myTasks = tasks.filter(t => t.assigneeEmail === currentUser.email && t.status !== 'done');
             document.getElementById('home-tasks-count').innerText = myTasks.length;
             document.getElementById('home-my-tasks-list').innerHTML = myTasks.map(t => `
-                <div class="p-4 flex items-center justify-between border-b border-slate-50 active:bg-slate-50" onclick="showTaskModal('${t.id}')">
-                    <div class="flex items-center gap-3">
-                        <div class="w-4 h-4 rounded-full border-2 border-slate-300"></div>
-                        <span class="font-bold text-slate-800">${t.title}</span>
-                    </div>
-                    <span class="text-[9px] font-black uppercase text-slate-400">${t.status}</span>
-                </div>
-            `).join('');
-        }
-
-        function renderTasks() {
-            let filtered = tasks;
-            if(activeSpaceId) filtered = tasks.filter(t => t.spaceId === activeSpaceId);
-            
-            document.getElementById('m-tab-list').className = activeTaskView === 'list' ? 'flex-1 py-1.5 text-xs font-bold rounded-md bg-white text-brand shadow-sm' : 'flex-1 py-1.5 text-xs font-bold text-slate-500';
-            document.getElementById('m-tab-board').className = activeTaskView === 'board' ? 'flex-1 py-1.5 text-xs font-bold rounded-md bg-white text-brand shadow-sm' : 'flex-1 py-1.5 text-xs font-bold text-slate-500';
-
-            if(activeTaskView === 'list') {
-                document.getElementById('tasks-list-layout').classList.remove('hidden');
-                document.getElementById('tasks-board-layout').classList.add('hidden');
-                document.getElementById('tasks-list-container').innerHTML = filtered.map(t => `
-                    <div class="p-4 active:bg-slate-50 transition" onclick="showTaskModal('${t.id}')">
-                        <div class="flex justify-between items-start mb-2">
-                            <span class="text-[10px] font-bold text-brand uppercase">${t.status}</span>
-                            <span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded font-black uppercase">${t.priority}</span>
-                        </div>
+                <div onclick="showTaskModal('${t.id}')" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center cursor-pointer hover:border-brand transition-all">
+                    <div>
+                        <p class="text-[9px] font-black uppercase text-slate-400 mb-1">${t.status || 'todo'}</p>
                         <h4 class="font-bold text-slate-800">${t.title}</h4>
-                        <div class="flex items-center justify-between mt-3 text-xs text-slate-400">
-                            <span><i class="far fa-user mr-1"></i> ${team.find(x=>x.email===t.assigneeEmail)?.name.split(' ')[0] || 'Unassigned'}</span>
-                            <span><i class="far fa-calendar-alt mr-1"></i> ${t.dueDate || 'No Date'}</span>
-                        </div>
-                    </div>`).join('');
-            } else {
-                document.getElementById('tasks-list-layout').classList.add('hidden');
-                document.getElementById('tasks-board-layout').classList.remove('hidden');
-                const cols = {todo:[],inprogress:[],done:[]};
-                filtered.forEach(t => { if(cols[t.status]) cols[t.status].push(t); else cols.todo.push(t); });
-                document.getElementById('tasks-board-layout').innerHTML = ['todo','inprogress','done'].map(s => `
-                    <div class="w-72 flex-shrink-0 space-y-3">
-                        <h5 class="text-xs font-bold uppercase text-slate-400 pl-2">${s} (${cols[s].length})</h5>
-                        ${cols[s].map(t => `<div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm task-card prio-${t.priority}" onclick="showTaskModal('${t.id}')">
-                            <p class="font-bold text-slate-800 text-sm">${t.title}</p>
-                        </div>`).join('')}
-                    </div>`).join('');
-            }
+                    </div>
+                    <i class="fas fa-chevron-right text-slate-200"></i>
+                </div>`).join('') || '<p class="text-xs text-slate-400 italic p-4">No tasks assigned to you.</p>';
         }
 
-        window.switchTaskView = (v) => { activeTaskView = v; renderTasks(); };
+        /* --- CHAT --- */
+        function renderChatSidebars() {
+            const list = document.getElementById('chat-sidebar-list');
+            list.innerHTML = team.filter(t => t.email !== currentUser.email).map(t => `
+                <div onclick="openChat('${t.email}')" class="chat-contact p-4 flex items-center gap-4 ${activeChatId === t.email ? 'active shadow-sm' : ''}">
+                    <div class="w-12 h-12 bg-slate-200 rounded-2xl flex items-center justify-center font-bold text-lg">${t.name.charAt(0)}</div>
+                    <div class="flex-1 min-w-0">
+                        <p class="font-bold text-slate-900">${t.name}</p>
+                        <p class="text-xs text-slate-400 truncate">Tap to message</p>
+                    </div>
+                </div>`).join('');
+        }
 
-        window.showTaskModal = (id = null) => {
-            document.getElementById('task-id').value = id || '';
-            document.getElementById('task-id-display').innerText = id ? `#${id.substring(id.length-4)}` : '#NEW';
-            const statuses = ['todo', 'inprogress', 'done'];
-            document.getElementById('task-status').innerHTML = statuses.map(s => `<option value="${s}">${s.toUpperCase()}</option>`).join('');
-            if(id) {
-                const t = tasks.find(x => x.id === id);
-                document.getElementById('task-title').value = t.title;
-                document.getElementById('task-status').value = t.status;
-                document.getElementById('task-assignee').value = t.assigneeEmail || '';
-                document.getElementById('task-due').value = t.dueDate || '';
-                document.getElementById('task-priority').value = t.priority || 'normal';
-                quillTask.root.innerHTML = t.desc || '';
-                document.getElementById('btn-delete-task').classList.remove('hidden');
-            } else {
-                document.getElementById('task-title').value = '';
-                document.getElementById('task-status').value = 'todo';
-                document.getElementById('task-assignee').value = '';
-                quillTask.root.innerHTML = '';
-                document.getElementById('btn-delete-task').classList.add('hidden');
-            }
-            openModal('modal-task');
-        };
-
-        window.saveTask = () => {
-            const id = document.getElementById('task-id').value || `t_${Date.now()}`;
-            if(!document.getElementById('task-title').value) return;
-            set(ref(db, `tasks/${id}`), {
-                id, title: document.getElementById('task-title').value,
-                status: document.getElementById('task-status').value,
-                assigneeEmail: document.getElementById('task-assignee').value,
-                dueDate: document.getElementById('task-due').value,
-                priority: document.getElementById('task-priority').value,
-                spaceId: activeSpaceId || 'internal',
-                desc: quillTask.root.innerHTML,
-                updatedAt: Date.now()
+        window.openChat = (email) => {
+            activeChatId = email;
+            const other = team.find(t => t.email === email);
+            document.getElementById('chat-header-name').innerText = other.name;
+            document.getElementById('chat-header-avatar').innerText = other.name.charAt(0);
+            document.getElementById('chat-window').classList.remove('hidden');
+            document.getElementById('chat-empty').classList.add('hidden');
+            
+            const roomId = [currentUser.email, email].sort().join('_').replace(/[^a-zA-Z0-9]/g, '');
+            onValue(ref(db, `messages/${roomId}`), snap => {
+                const msgs = Object.values(snap.val() || {});
+                document.getElementById('chat-messages').innerHTML = msgs.map(m => {
+                    const isMe = m.sender === currentUser.email;
+                    return `<div class="max-w-[80%] p-4 ${isMe ? 'chat-bubble-me' : 'chat-bubble-them'}">
+                        <p class="text-sm font-medium">${m.text}</p>
+                        <p class="text-[9px] mt-1 opacity-60 font-bold">${new Date(m.ts).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
+                    </div>`;
+                }).join('');
+                const cont = document.getElementById('chat-messages'); cont.scrollTop = cont.scrollHeight;
             });
-            closeModals();
         };
 
-        window.deleteTaskBtn = () => { if(confirm("Delete?")) { remove(ref(db, `tasks/${document.getElementById('task-id').value}`)); closeModals(); } };
+        window.sendChatMessage = () => {
+            const input = document.getElementById('chat-input');
+            if(!input.value.trim() || !activeChatId) return;
+            const roomId = [currentUser.email, activeChatId].sort().join('_').replace(/[^a-zA-Z0-9]/g, '');
+            push(ref(db, `messages/${roomId}`), { sender: currentUser.email, text: input.value, ts: Date.now() });
+            input.value = '';
+        };
 
+        /* --- ONBOARDING & BLUEPRINT --- */
+        window.selectBlueprint = (plan) => {
+            document.querySelectorAll('input[name="blueprint"]').forEach(i => i.closest('label').className = 'p-6 border-2 border-slate-100 rounded-3xl cursor-pointer hover:border-brand transition-all relative group');
+            const target = document.querySelector(`input[value="${plan}"]`);
+            target.checked = true;
+            target.closest('label').className = 'p-6 border-2 border-brand bg-brand-light/20 rounded-3xl cursor-pointer relative group shadow-lg';
+            
+            const list = document.getElementById('blueprint-services-list');
+            const services = plan === 'growth' ? [...BLUEPRINT.foundation, ...BLUEPRINT.growth] : BLUEPRINT.foundation;
+            list.innerHTML = services.map(s => `<label class="flex items-center gap-3 p-3 bg-white border border-slate-100 rounded-xl text-[10px] font-bold text-slate-700"><input type="checkbox" checked value="${s}" class="accent-brand"> ${s}</label>`).join('');
+        };
+
+        window.commitNewClient = () => {
+            const name = document.getElementById('new-client-name').value;
+            const date = document.getElementById('new-client-signup').value;
+            if(!name) return alert("Business Name Required");
+            const id = `cli_${Date.now()}`;
+            const services = Array.from(document.querySelectorAll('#blueprint-services-list input:checked')).map(i => ({ name: i.value, done: false }));
+            set(ref(db, `clients/${id}`), { id, name, signupDate: date, services, created: Date.now() });
+            switchMainView('home');
+        };
+
+        window.openClientDashboard = (id) => {
+            activeClientId = id;
+            const c = clients.find(x => x.id === id);
+            document.getElementById('cd-name').innerText = c.name;
+            document.getElementById('cd-initial').innerText = c.name.charAt(0);
+            document.getElementById('cd-date').innerText = `Joined: ${c.signupDate}`;
+            switchClientTab('roadmap');
+            switchMainView('client-dashboard');
+        };
+
+        window.switchClientTab = (tab) => {
+            const c = clients.find(x => x.id === activeClientId);
+            const container = document.getElementById('client-tab-content');
+            document.querySelectorAll('#view-client-dashboard button').forEach(b => b.className = "pb-4 font-bold text-slate-400 border-b-2 border-transparent");
+            document.getElementById(`ctab-${tab}`).className = "pb-4 font-bold text-brand border-b-2 border-brand";
+
+            if(tab === 'roadmap') {
+                const total = c.services?.length || 1;
+                const done = c.services?.filter(s => s.done).length || 0;
+                const pct = Math.round((done/total)*100);
+                document.getElementById('cd-pct').innerText = `${pct}%`;
+                document.getElementById('cd-progress-bar').style.width = `${pct}%`;
+
+                container.innerHTML = `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        ${c.services?.map((s, idx) => `
+                            <div onclick="toggleService('${idx}')" class="p-5 bg-white border border-slate-200 rounded-2xl flex items-center gap-4 cursor-pointer hover:bg-slate-50 transition">
+                                <div class="w-6 h-6 rounded-lg border-2 flex items-center justify-center ${s.done ? 'bg-brand border-brand' : 'border-slate-200'}">
+                                    ${s.done ? '<i class="fas fa-check text-white text-[10px]"></i>' : ''}
+                                </div>
+                                <span class="font-bold text-slate-700 ${s.done ? 'line-through opacity-40' : ''}">${s.name}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } else if(tab === 'notes') {
+                container.innerHTML = `<textarea id="mgmt-notes" class="w-full h-80 bg-white border border-slate-200 rounded-3xl p-8 outline-none focus:border-brand transition-all shadow-inner">${c.notes || ''}</textarea><button onclick="saveClientNotes()" class="mt-4 bg-brand text-white px-8 py-3 rounded-2xl font-bold shadow-xl">Sync Notes</button>`;
+            }
+        };
+
+        window.toggleService = (idx) => {
+            const c = clients.find(x => x.id === activeClientId);
+            c.services[idx].done = !c.services[idx].done;
+            update(ref(db, `clients/${activeClientId}`), { services: c.services });
+            switchClientTab('roadmap');
+        };
+
+        window.saveClientNotes = () => {
+            const val = document.getElementById('mgmt-notes').value;
+            update(ref(db, `clients/${activeClientId}`), { notes: val });
+        };
+
+        /* --- DOCS --- */
         window.showDocModal = () => { document.getElementById('doc-title-input').value = ''; quillDoc.root.innerHTML = ''; openModal('modal-doc'); };
         window.saveDocument = () => {
-            const title = document.getElementById('doc-title-input').value.trim();
-            if(!title) return;
+            const title = document.getElementById('doc-title-input').value;
+            if(!title) return alert("Enter Title");
             const id = `doc_${Date.now()}`;
             set(ref(db, `docs/${id}`), { id, title, content: quillDoc.root.innerHTML, createdBy: currentUser.name, ts: Date.now() });
             closeModals();
         };
+
         function renderDocsGrid() {
-            document.getElementById('docs-grid').innerHTML = docs.map(d => `<div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm active:scale-95 transition" onclick="viewDoc('${d.id}')">
-                <div class="w-10 h-10 bg-slate-50 rounded flex items-center justify-center text-slate-400 mb-4"><i class="fas fa-file-alt"></i></div>
-                <h4 class="font-bold text-slate-900 truncate">${d.title}</h4>
-                <p class="text-[10px] text-slate-400 font-bold uppercase mt-1">BY ${d.createdBy.split(' ')[0]}</p>
-            </div>`).join('');
+            document.getElementById('docs-grid').innerHTML = docs.map(d => `
+                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm active:scale-95 transition-transform cursor-pointer" onclick="viewDoc('${d.id}')">
+                    <div class="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center text-brand text-xl mb-4"><i class="fas fa-file-alt"></i></div>
+                    <h4 class="font-bold text-slate-800 truncate">${d.title}</h4>
+                    <p class="text-[10px] font-black text-slate-400 mt-2 uppercase tracking-widest">By ${d.createdBy}</p>
+                </div>`).join('');
         }
+
         window.viewDoc = (id) => {
             const d = docs.find(x => x.id === id);
             document.getElementById('doc-title-input').value = d.title;
@@ -569,26 +607,53 @@
             openModal('modal-doc');
         };
 
-        window.commitNewClient = () => {
-            const name = document.getElementById('new-client-name').value;
-            const date = document.getElementById('new-client-signup').value;
-            if(!name || !date) return alert("Fill details.");
-            const spaceId = `space_${Date.now()}`;
-            set(ref(db, `spaces/${spaceId}`), { id: spaceId, name: `${name} | ONBOARDING` });
-            switchMainView('home');
+        /* --- TASKS --- */
+        window.showTaskModal = (id = null) => {
+            const statuses = ['todo', 'inprogress', 'done'];
+            document.getElementById('task-status').innerHTML = statuses.map(s => `<option value="${s}">${s.toUpperCase()}</option>`).join('');
+            const priorities = ['low', 'normal', 'high', 'urgent'];
+            document.getElementById('task-priority').innerHTML = priorities.map(p => `<option value="${p}">${p.toUpperCase()}</option>`).join('');
+            
+            if(id) {
+                const t = tasks.find(x => x.id === id);
+                document.getElementById('task-title').value = t.title;
+                document.getElementById('task-status').value = t.status || 'todo';
+                document.getElementById('task-assignee').value = t.assigneeEmail || '';
+                document.getElementById('task-due').value = t.dueDate || '';
+                document.getElementById('task-priority').value = t.priority || 'normal';
+                quillTask.root.innerHTML = t.desc || '';
+            } else {
+                document.getElementById('task-title').value = '';
+                document.getElementById('task-status').value = 'todo';
+                document.getElementById('task-assignee').value = '';
+                quillTask.root.innerHTML = '';
+            }
+            openModal('modal-task');
         };
 
-        window.openModal = (id) => {
-            document.getElementById('modal-overlay').classList.remove('hidden');
-            document.getElementById(id).classList.remove('hidden');
+        window.saveTask = () => {
+            const title = document.getElementById('task-title').value;
+            if(!title) return;
+            const id = `task_${Date.now()}`;
+            set(ref(db, `tasks/${id}`), {
+                id, title,
+                status: document.getElementById('task-status').value,
+                assigneeEmail: document.getElementById('task-assignee').value,
+                dueDate: document.getElementById('task-due').value,
+                priority: document.getElementById('task-priority').value,
+                desc: quillTask.root.innerHTML,
+                ts: Date.now()
+            });
+            closeModals();
         };
-        window.closeModals = () => {
-            document.getElementById('modal-overlay').classList.add('hidden');
-            document.querySelectorAll('.modal-content').forEach(d => d.classList.add('hidden'));
-        };
-        window.showCreateSpaceModal = () => { const n = prompt("Space Name:"); if(n) set(ref(db, `spaces/space_${Date.now()}`), { id: `space_${Date.now()}`, name: n }); };
+
+        /* --- UTILS --- */
+        window.openModal = (id) => { document.getElementById('modal-overlay').classList.remove('hidden'); document.getElementById(id).classList.remove('hidden'); };
+        window.closeModals = () => { document.getElementById('modal-overlay').classList.add('hidden'); document.querySelectorAll('.modal-content').forEach(d => d.classList.add('hidden')); };
+        window.handleSignOut = () => { if(confirm("Logout?")) signOut(auth); };
 
         init();
+        window.selectBlueprint('foundation');
     </script>
 </body>
 </html>
